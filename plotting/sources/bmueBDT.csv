@@ -1,0 +1,6 @@
+B_IPCHI2_OWNPV,0,30
+B_PT,0,10000
+B_IP_OWNPV,0,0.2
+muplus_CosTheta,-1,1
+B_TAU,0,0.003
+PT_Min,0,3000
