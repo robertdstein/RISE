@@ -1,13 +1,9 @@
-import sys, ROOT, os, math
+import sys, ROOT, math, time
 import array
 
 tuplePath = "/net/storage03/data/users/rstein/tuples/qsq/"
 tupleName = "MC_Bplus_Kplusmue_BDT"
 treeName = "DecayTree"
-
-tuplePath = "/net/storage03/data/users/dberninghoff/B2Kll/Merged/MC_Bplus_Kplusmue"
-tupleName = "MC_Bplus_Kplusmue"
-treeName = "Bu2LLK_meLine_TupleMC/DecayTree"
 
 fullName = tuplePath + tupleName + ".root"
 
@@ -92,7 +88,6 @@ for i in range(nt.GetEntries()):
     eminus_PBranch.GetEntry(i)
     eminus_PZBranch.GetEntry(i)
     eminusval = (math.fabs(eminus_P[0]) + eminus_PZ[0])/(math.fabs(eminus_P[0]) - eminus_PZ[0])
-    print eminus_P[0]
     if eminusval > -1.0:
         eminus_LOKI_ETA[0] = 0.5*math.log(eminusval)
     else:
@@ -102,3 +97,12 @@ for i in range(nt.GetEntries()):
 nt.SetBranchStatus("*", 1)
 nt.Write("DecayTree")
 nf.Close()
+
+message = str(time.asctime(time.localtime())) + " Created new tree at /net/storage03/data/users/rstein/tuples/qsq/" + tupleName+ "_eta.root"
+print message
+
+import os, sys
+sys.path.append('/home/rstein/pythonscripts/misc')
+import sendemail as se
+name = os.path.basename(__file__)
+se.send(name, message)

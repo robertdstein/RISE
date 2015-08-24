@@ -6,7 +6,7 @@ ROOT.gROOT.SetBatch(ROOT.kTRUE)
 c=ROOT.TCanvas()
 lhcb.setLHCbStyle()
 
-def plotsep(name, source, data, datatree, MC, MCtree, weighting):
+def plotsep(name, source, data, datatree, MC, MCtree, weighting=False):
     import csv
     def rowcount():
         with open(source, 'rb') as csvfile:

@@ -1,48 +1,34 @@
 import ROOT, time, os, csv
-from sklearn.tree import DecisionTreeClassifier
-from sklearn import ensemble
 import numpy as np
-from sklearn.metrics import roc_curve, auc
-import pylab as pl
-import argparse
-from subprocess import call
-import branchingratio as br
-import fit as f
-import simulate as s
+import calculate
 
 print time.asctime(time.localtime()), "Starting Code"
 
-#Fix blinded region and B Mass fit range
+filename = 'results.csv'
 
-lower=4500
-upper=6250
-lowercut=5100
-uppercut=5400
-
-with open('results.csv', 'wb') as csvfile:
+with open(filename, 'wb') as csvfile:
     writer = csv.writer(csvfile, delimiter=' ',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(['bdt' ,'count', 'peak', 'sig', 'eff', 'significance', 'ratio'])
+    writer.writerow(['bdt', 'ratio', 'count', 'Background'])
     
-    bdtvals = np.arange(0.95, 0.99, 0.01)
-    countvals = np.arange(10, 400, 10)
+    bdtvals = np.arange(0.69, 0.99, 0.02)
     
     #Iterate over a range of BDT probabilities and signal counts, exporting results to a csv file
     
     for i in bdtvals:
         bdt = i
         print time.asctime(time.localtime()), "BDT cut is", i
-        expcount = f.run(lower, upper, lowercut, uppercut, bdt)
-        for i in countvals:
-            count = i
-            sig, eff, significance, peak = s.run(lower, upper, lowercut, uppercut, bdt, expcount, count)
-            if significance == True:
-                ratio = br.run(sig, eff)
-            else:
-                ratio = None
-            data = [bdt, count, peak, sig, eff, significance, ratio]
-            writer.writerow(data)
-end = time.time()
-print time.asctime(time.localtime()), "Code Ended"
+        ratio, count, bkg = calculate.output(bdt, countoutput=True)
+        data = [bdt, ratio, count, bkg]
+        writer.writerow(data)
 
-pl.show()
+#Produces an output message with the duplicate number. Then sends an email notification.
+
+message = str(time.asctime(time.localtime())) + " Results saved in " + filename
+print message
+
+import os, sys
+sys.path.append('/home/rstein/pythonscripts/misc')
+import sendemail as se
+name = os.path.basename(__file__)
+se.send(name, message)

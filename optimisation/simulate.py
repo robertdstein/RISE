@@ -10,18 +10,18 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, count, probk =0.0, 
     
     #Create a Monte Carlo dataset with a selection
     
-    datasource = "MC_Bplus_Kplusmue_BDT.root"
+    datasource = "MC_Bplus_Kplusmue_resampled.root"
     
-    tree = "DecayTree"
+    tree = "default"
     filename = "/net/storage03/data/users/rstein/tuples/qsq/" + datasource
     f = ROOT.TFile(filename)
     t = f.Get(tree)
     t.SetBranchStatus("*",0)
     t.SetBranchStatus("B_M", 1)
     t.SetBranchStatus("BDT", 1)
-    t.SetBranchStatus("Kplus_ProbNNk", 1)
-    t.SetBranchStatus("muplus_ProbNNmu", 1)
-    t.SetBranchStatus("eminus_ProbNNe", 1)
+    t.SetBranchStatus("Kplus_PIDK_corrected", 1)
+    t.SetBranchStatus("muplus_PIDmu_corrected", 1)
+    t.SetBranchStatus("eminus_PIDe_corrected", 1)
     t.SetBranchStatus("Kplus_isMuonLoose", 1)
     t.SetBranchStatus("Kplus_InAccMuon", 1)
     t.SetBranchStatus("muplus_ProbNNghost", 1)
@@ -32,9 +32,9 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, count, probk =0.0, 
     var = ROOT.RooRealVar("B_M", "m(K^{+}#mu^{+}e^{-})",lowercut, uppercut)
     BDT = ROOT.RooRealVar("BDT", "", float(BDTprob), 1)
     
-    kplus = ROOT.RooRealVar("Kplus_ProbNNk", "", 0.0, 1)
-    muplus = ROOT.RooRealVar("muplus_ProbNNmu", "", 0, 1)
-    eminus = ROOT.RooRealVar("eminus_ProbNNe", "", 0, 1)
+    kplus = ROOT.RooRealVar("Kplus_PIDK_corrected", "", 0.0, 1)
+    muplus = ROOT.RooRealVar("muplus_PIDmu_corrected", "", 0, 1)
+    eminus = ROOT.RooRealVar("eminus_PIDe_corrected", "", 0, 1)
     
     kplusmuonloose = ROOT.RooRealVar("Kplus_isMuonLoose", "", 0.0, 1)
     kplusinaccmuon = ROOT.RooRealVar("Kplus_InAccMuon", "", 0, 1)
@@ -44,7 +44,7 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, count, probk =0.0, 
     psim = ROOT.RooRealVar("Psi_M", "", 0, 1)    
        
     
-    partselection = "(BDT >"  + str(BDTprob) + ") && (Kplus_ProbNNk > " + str(probk) + ") && (muplus_ProbNNmu > " + str(probmu) + ") && (eminus_ProbNNe > " + str(probe) +")&& (Kplus_isMuonLoose == 0) && (Kplus_InAccMuon == 1) && (eminus_ProbNNe > 0.05) && (Kplus_ProbNNk > 0.05) && (muplus_ProbNNmu > 0.05) && (Psi_M < 3000 || Psi_M >3200)"
+    partselection = "(BDT >"  + str(BDTprob) + ") && (Kplus_PIDK_corrected > " + str(probk) + ") && (muplus_PIDmu_corrected > " + str(probmu) + ") && (eminus_PIDe_corrected > " + str(probe) +")&& (Kplus_isMuonLoose == 0) && (Kplus_InAccMuon == 1) && (eminus_PIDe_corrected > 0.05) && (Kplus_PIDK_corrected > 0.05) && (muplus_PIDmu_corrected > 0.05) && (Psi_M < 3000 || Psi_M >3200)"
     
     selection = "(B_M < " + str(uppercut) + ") && (B_M > " + str(lowercut) + " ) && " + partselection
     

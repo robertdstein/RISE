@@ -1,4 +1,4 @@
-import sys, ROOT, os, math, time
+import sys, ROOT, math, time
 import array
 
 tuplePath = "/net/storage03/data/users/rstein/tuples/qsq/"
@@ -19,7 +19,7 @@ if not t :
     print("tree " + treeName + " not found")
     exit()
 
-nFileName = "/net/storage03/data/users/rstein/tuples/qsq/" + tupleName+ "_newProbNN.root"
+nFileName = "/net/storage03/data/users/rstein/tuples/qsq/" + tupleName+ "_duplicatedpid.root"
 print('saving File to ' + nFileName)
 
 nf = ROOT.TFile(nFileName, "RECREATE")
@@ -31,58 +31,46 @@ nt.SetBranchStatus("Kplus_ProbNNk", 1)
 nt.SetBranchStatus("eminus_ProbNNe", 1)
 nt.SetBranchStatus("muplus_ProbNNmu", 1)
 
-Kplus_newProbNNk = (array.array('d',[0]))
-Kplus_newProbNNkBranch = nt.Branch("Kplus_newProbNNk", Kplus_newProbNNk, "Kplus_newProbNNk/D")
+Kplus_PIDk_corrected = (array.array('d',[0]))
+Kplus_PIDk_correctedBranch = nt.Branch("Kplus_PIDk_corrected", Kplus_PIDk_corrected, "Kplus_PIDk_corrected/D")
 
 Kplus_ProbNNk = (array.array('d',[0]))
 Kplus_ProbNNkBranch = nt.GetBranch("Kplus_ProbNNk")
 Kplus_ProbNNkBranch.SetAddress(Kplus_ProbNNk)
 
-muplus_newProbNNmu = (array.array('d',[0]))
-muplus_newProbNNmuBranch = nt.Branch("muplus_newProbNNmu", muplus_newProbNNmu, "muplus_newProbNNmu/D")
+muplus_PIDmu_corrected = (array.array('d',[0]))
+muplus_PIDmu_correctedBranch = nt.Branch("muplus_PIDmu_corrected", muplus_PIDmu_corrected, "muplus_PIDmu_corrected/D")
 
 muplus_ProbNNmu = (array.array('d',[0]))
 muplus_ProbNNmuBranch = nt.GetBranch("muplus_ProbNNmu")
 muplus_ProbNNmuBranch.SetAddress(muplus_ProbNNmu)
 
-eminus_newProbNNe = (array.array('d',[0]))
-eminus_newProbNNeBranch = nt.Branch("eminus_newProbNNe", eminus_newProbNNe, "eminus_newProbNNe/D")
+
+eminus_PIDe_corrected = (array.array('d',[0]))
+eminus_PIDe_correctedBranch = nt.Branch("eminus_PIDe_corrected", eminus_PIDe_corrected, "eminus_PIDe_corrected/D")
 
 eminus_ProbNNe = (array.array('d',[0]))
 eminus_ProbNNeBranch = nt.GetBranch("eminus_ProbNNe")
 eminus_ProbNNeBranch.SetAddress(eminus_ProbNNe)
 
+
 print "itterating over", nt.GetEntries() , "events"
 for i in range(nt.GetEntries()):
     Kplus_ProbNNkBranch.GetEntry(i)
-    kval = Kplus_ProbNNk[0]/(1-Kplus_ProbNNk[0])
-    if Kplus_ProbNNk[0] > 0.0:
-        Kplus_newProbNNk[0] = math.log(kval)
-    else:
-        Kplus_newProbNNk[0] = -1000
-    Kplus_newProbNNkBranch.Fill()
-    
+    Kplus_PIDk_corrected[0] = Kplus_ProbNNk[0]
+    Kplus_PIDk_correctedBranch.Fill()
     muplus_ProbNNmuBranch.GetEntry(i)
-    muval = muplus_ProbNNmu[0]/(1-muplus_ProbNNmu[0])
-    if muplus_ProbNNmu[0] > 0.0:
-        muplus_newProbNNmu[0] = math.log(muval)
-    else:
-        muplus_newProbNNmu[0] = -1000
-    muplus_newProbNNmuBranch.Fill()
-    
+    muplus_PIDmu_corrected[0] = muplus_ProbNNmu[0]
+    muplus_PIDmu_correctedBranch.Fill()
     eminus_ProbNNeBranch.GetEntry(i)
-    eminusval = eminus_ProbNNe[0]/(1-eminus_ProbNNe[0])
-    if eminus_ProbNNe[0] > 0.0:
-        eminus_newProbNNe[0] = math.log(eminusval)
-    else:
-        eminus_newProbNNe[0] = -1000
-    eminus_newProbNNeBranch.Fill()
+    eminus_PIDe_corrected[0] = eminus_ProbNNe[0]
+    eminus_PIDe_correctedBranch.Fill()
 
 nt.SetBranchStatus("*", 1)
 nt.Write("DecayTree")
 nf.Close()
 
-message = str(time.asctime(time.localtime())) + "Created new tree at /net/storage03/data/users/rstein/tuples/qsq/" + tupleName+ "_newProbNN.root"
+message = str(time.asctime(time.localtime())) + " Created new tree at /net/storage03/data/users/rstein/tuples/qsq/" + tupleName+ "_duplicatedpid.root"
 print message
 
 import os, sys

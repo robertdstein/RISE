@@ -8,3 +8,9 @@ MC = "with_bdt_jpsik_12_mc_isoln_newpid_corr_allvars_eta.root"
 MCtree = "DecayTree"
 
 be.plotsep(name, source, data, datatree, MC, MCtree)
+
+import os, sys
+sys.path.append('/home/rstein/pythonscripts/misc')
+import sendemail as se
+name = os.path.basename(__file__)
+se.send(name, "Plotting completed")

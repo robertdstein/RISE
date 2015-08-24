@@ -1,17 +1,17 @@
 {
     "tasks": [
         {
-            "resampler_path" : "/home/rstein/pidTool/lhcb_pid_resample/Kaon_Stripping20_MagnetUp.pkl",
+            "resampler_path" : "/net/storage03/data/users/rstein/pid/pidTool/lhcb_pid_resample/Kaon_Stripping20_MagnetAny.pkl",
             "features" : ["Kplus_P", "Kplus_LOKI_ETA", "nTracks"],
             "pids" : [{"kind" : "K_V3ProbNNK", "name" : "Kplus_PIDK_corrected"}]
         },
         {
-            "resampler_path" : "/home/rstein/pidTool/lhcb_pid_resample/Mu_Stripping20_MagnetUp.pkl",
-            "features" : ["muplus_P", "nTracks"],
+            "resampler_path" : "/net/storage03/data/users/rstein/pid/pidTool/lhcb_pid_resample/Mu_Stripping20_MagnetAny.pkl",
+            "features" : ["muplus_P", "muplus_LOKI_ETA", "nTracks"],
             "pids" : [{"kind" : "Mu_V3ProbNNmu", "name" : "muplus_PIDmu_corrected"}]
         },
         {
-            "resampler_path" : "/home/rstein/pidTool/lhcb_pid_resample/e_Stripping20_MagnetUp.pkl",
+            "resampler_path" : "/net/storage03/data/users/rstein/pid/pidTool/lhcb_pid_resample/e_Stripping20_MagnetAny.pkl",
             "features" : ["eminus_P", "eminus_LOKI_ETA", "nTracks"],
             "pids" : [{"kind" : "e_V3ProbNNe", "name" : "eminus_PIDe_corrected"}]
         }
