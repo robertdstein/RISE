@@ -24,9 +24,9 @@ def output(bdt, probk=0.2, probmu=0.2, probe=0.2, countoutput=False):
         while significance != True:
             sig, eff, significance, peak = s.run(lower, upper, lowercut, uppercut, bdt, expcount, count, probk, probmu, probe)
             count +=20
-        ratio = br.run(sig, eff)
+        ratio, error = br.run(sig, eff)
         if countoutput == True:
-            return ratio, count, expcount
+            return ratio, error
         else:
             return ratio
     #If the fit has not converged, or expected count is 0, return error

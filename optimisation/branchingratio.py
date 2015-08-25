@@ -16,4 +16,4 @@ def run(sigyield, efficiency):
     br = sigyield / factor
     
     print time.asctime(time.localtime()), "Branching Ratio would be", br
-    return br.nominal_value
+    return br.nominal_value, br.std_dev

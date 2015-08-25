@@ -157,4 +157,5 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, count, probk =0.0, 
         
     efficiency = float(t.GetEntries(selection))/float(t.GetEntriesFast())
     print time.asctime(time.localtime()), "Efficiency is", efficiency
+    f.Close()
     return ufloat(sig,err), efficiency, significance, peak

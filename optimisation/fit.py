@@ -97,4 +97,5 @@ def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, pro
     #Pass an Error to minimisation Algorithm, if fit does not converge/has 0 counts
     else:
         expectedbkg = None
+    f.Close()
     return expectedbkg

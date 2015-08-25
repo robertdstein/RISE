@@ -1,61 +1,47 @@
-import ROOT, time, os
-from sklearn.tree import DecisionTreeClassifier
-from sklearn import ensemble
+import time, os
 import numpy as np
-from sklearn.metrics import roc_curve, auc
-import pylab as pl
 import argparse
-from subprocess import call
 
 #Code hub to run the different modules involved in optimisation
 
 start = time.time()
 print time.asctime(time.localtime()), "Starting Code"
 
-parser = argparse.ArgumentParser(description='Beform Datacuts and look for B Mass peaks')
-parser.add_argument("-f", "--fit", action="store_true")
-parser.add_argument("-g", "--graph", action="store_true")
-parser.add_argument("-s", "--simulate", action="store_true")
-parser.add_argument("-br", "--branchingratio", action="store_true")
-parser.add_argument("-l", "--mlower", default=4500)
-parser.add_argument("-u", "--mupper", default=6250)
-parser.add_argument("-lc", "--lowercut", default=5100)
-parser.add_argument("-uc", "--uppercut", default=5400)
-parser.add_argument("-c", "--count", default=20)
-parser.add_argument("-bkg", "--background", default=200)
-parser.add_argument("-b", "--bdt", default=0.6)
+parser = argparse.ArgumentParser(description='Optimise Branching ratio calculations')
+parser.add_argument("-a", "--automate", action="store_true")
+parser.add_argument("-p", "--plot", action="store_true")
+parser.add_argument("-m", "--minimise", action="store_true")
+parser.add_argument("-mk", "--minimisek", action="store_true")
+parser.add_argument("-me", "--minimisee", action="store_true")
+parser.add_argument("-mmu", "--minimisemu", action="store_true")
+parser.add_argument("-s", "--source", default="results.csv")
+parser.add_argument("-bdti", "--bdtinterval", default=0.01)
+parser.add_argument("-bdtl", "--bdtlowerlim", default=0.70)
+parser.add_argument("-bdtu", "--bdtupperlim", default=0.99)
+parser.add_argument("-c", "--defaultcut", default=0.2)
 
 cfg = parser.parse_args()
 
-#Produce a dataset from the TTree, remove the BMass range to create a blinded dataset 
+#Automatically calculates the branching ratio for a range of BDT values, outputting results in a csv file 
 
-if cfg.fit == True:
-    import fit as f
-    if cfg.graph == True:
-        cfg.background = f.run(cfg.mlower, cfg.mupper, cfg.lowercut, cfg.uppercut, cfg.bdt, graph = True)
-    else:
-        cfg.background = f.run(cfg.mlower, cfg.mupper, cfg.lowercut, cfg.uppercut, cfg.bdt)
+if cfg.automate == True:
+    import automate as a
+    a.process("results.csv", cfg.bdtinterval, cfg.bdtlowerlim, cfg.bdtupperlim)
 
-#Using a Monte Carlo model and background, simulate K mu e data to place in the cut region 
+#Reads results from a csv file, and plots a scatter graph of BDT value against branching ratio
 
-if cfg.simulate == True:
-    import simulate as s
-    if cfg.graph == True:
-        sig, eff, significance, peak = s.run(cfg.mlower, cfg.mupper, cfg.lowercut, cfg.uppercut, cfg.bdt, cfg.background, cfg.count, graph = True)
-    else:
-        sig, eff, significance, peak = s.run(cfg.mlower, cfg.mupper, cfg.lowercut, cfg.uppercut, cfg.bdt, cfg.background, cfg.count)
-    if significance == True:
-        
-        #If peak is greater than 5 sigma, calculate the branching ratio
-        
-        if cfg.branchingratio == True:
-            import branchingratio as br
-            br.run(sig, eff)
-    else:
-        print time.asctime(time.localtime()), "Uncertainty is too high to place an upper limit on Branching Ratio"
-    
-    
-end = time.time()
-print time.asctime(time.localtime()), "Code Ended"
+if cfg.plot==True:
+    import plotresults as p
+    p.scattergraph(cfg.source)
 
-pl.show()
+if cfg.minimise == True:
+    import minimise as m
+    m.run(cfg.minimisek, cfg.minimisee, cfg.minimisemu, cfg.defaultcut)
+ 
+message = str(time.asctime(time.localtime())) + " Code run completed! Automate = " + str(cfg.automate) + ", Plot is " + str(cfg.plot) + ", Minimise is " + str(cfg.minimise)
+print message
+import os, sys
+sys.path.append('/home/rstein/pythonscripts/misc')
+import sendemail as se
+name = os.path.basename(__file__)
+se.send(name, message)
