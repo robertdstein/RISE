@@ -47,9 +47,8 @@ def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, pro
     
     if graph == True:
         c=ROOT.TCanvas()
-    
-    frame = var.frame()
-    ds.plotOn(frame)
+        frame = var.frame()
+        ds.plotOn(frame)
     
     var.setRange("R1", lower, lowercut)
     var.setRange("R2", uppercut, upper)
@@ -96,6 +95,7 @@ def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, pro
     #Pass an Error to minimisation Algorithm, if fit does not converge/has 0 counts
     else:
         expectedbkg = None
+    minu.Delete()
     ds.Delete()
     f.Close()
     return expectedbkg, a.getVal()
