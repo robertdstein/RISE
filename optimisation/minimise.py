@@ -9,24 +9,24 @@ from sklearn.externals import joblib
 
 import calculate
 
-def run(Kmin=False, Emin=False, Mumin=False, defaultcut = 0.2):
+def run(Kmin=False, Emin=False, Mumin=False, defaultcut = 0.2, text=False):
     argument = "bdt = 0.5, limit_bdt = (0.0, 0.99), error_bdt=0.1" 
     if Kmin == True:
-        argument += ", probk = " + str(defaultcut) + ", limit_probk=(0,1.), error_probk=0.1,"
+        argument += ", probk = " + str(defaultcut) + ", limit_probk=(-5 ,5.), error_probk=0.1"
     else:
-        argument += ", probk=" + str(defaultcut) + ", fix_probk=True"
+        argument += ", probk = " + str(defaultcut) + ", fix_probk=True"
     
     if Emin == True:
-        argument += ", probe = " + str(defaultcut) + ", limit_probe=(0,1.), error_probe = 0.1"
+        argument += ", probe = " + str(defaultcut) + ", limit_probe=(-5,5.), error_probe = 0.1"
     else:
-        argument += ", probe=" + str(defaultcut) + ", fix_probe=True"
+        argument += ", probe = " + str(defaultcut) + ", fix_probe=True"
     
     if Mumin == True:
-        argument += ", probmu = " + str(defaultcut) + ", limit_probmu=(0,1.), error_probmu=0.1"
+        argument += ", probmu = " + str(defaultcut) + ", limit_probmu=(-5,5.), error_probmu=0.1"
     else:
         argument += ", probmu=" + str(defaultcut) + ", fix_probmu=True"
     
-    argument += ", countoutput = False, fix_countoutput=True, errordef=(10**-9)"
+    argument += ", countoutput = False, fix_countoutput=True, text = " + str(text) + ", fix_text=True, errordef=(10**-9)"
     
     m = eval("Minuit(calculate.output," +  argument + ")")
     

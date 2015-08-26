@@ -2,9 +2,9 @@ import ROOT, time, os, csv
 import numpy as np
 import calculate
 
-print time.asctime(time.localtime()), "Starting Code"
+filename = 'results.csv'
 
-def process(source= 'results.csv', interval=0.1, lowerlim=0.7, upperlim=0.99):
+def process(source=filename, interval=0.1, lowerlim=0.7, upperlim=0.99, text=False):
     with open(source, 'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -17,13 +17,13 @@ def process(source= 'results.csv', interval=0.1, lowerlim=0.7, upperlim=0.99):
         for i in bdtvals:
             bdt = i
             print time.asctime(time.localtime()), "BDT cut is", i
-            ratio, error= calculate.output(bdt, countoutput=True)
+            ratio, error= calculate.output(bdt, countoutput=True, text=False)
             data = [bdt, ratio, error]
             writer.writerow(data)
 
     #Produces an output message with the duplicate number. Then sends an email notification.
 
-    message = str(time.asctime(time.localtime())) + " Results saved in " + filename
+    message = str(time.asctime(time.localtime())) + " Results saved in " + source
     print message
 
     import os, sys

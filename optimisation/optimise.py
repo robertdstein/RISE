@@ -14,11 +14,12 @@ parser.add_argument("-m", "--minimise", action="store_true")
 parser.add_argument("-mk", "--minimisek", action="store_true")
 parser.add_argument("-me", "--minimisee", action="store_true")
 parser.add_argument("-mmu", "--minimisemu", action="store_true")
+parser.add_argument("-t", "--text", action="store_true")
 parser.add_argument("-s", "--source", default="results.csv")
 parser.add_argument("-bdti", "--bdtinterval", default=0.01)
 parser.add_argument("-bdtl", "--bdtlowerlim", default=0.70)
 parser.add_argument("-bdtu", "--bdtupperlim", default=0.99)
-parser.add_argument("-c", "--defaultcut", default=0.2)
+parser.add_argument("-c", "--defaultcut", default=0.0)
 
 cfg = parser.parse_args()
 
@@ -26,7 +27,7 @@ cfg = parser.parse_args()
 
 if cfg.automate == True:
     import automate as a
-    a.process("results.csv", cfg.bdtinterval, cfg.bdtlowerlim, cfg.bdtupperlim)
+    a.process("results.csv", cfg.bdtinterval, cfg.bdtlowerlim, cfg.bdtupperlim, cfg.text)
 
 #Reads results from a csv file, and plots a scatter graph of BDT value against branching ratio
 
@@ -36,12 +37,4 @@ if cfg.plot==True:
 
 if cfg.minimise == True:
     import minimise as m
-    m.run(cfg.minimisek, cfg.minimisee, cfg.minimisemu, cfg.defaultcut)
- 
-message = str(time.asctime(time.localtime())) + " Code run completed! Automate = " + str(cfg.automate) + ", Plot is " + str(cfg.plot) + ", Minimise is " + str(cfg.minimise)
-print message
-import os, sys
-sys.path.append('/home/rstein/pythonscripts/misc')
-import sendemail as se
-name = os.path.basename(__file__)
-se.send(name, message)
+    m.run(cfg.minimisek, cfg.minimisee, cfg.minimisemu, cfg.defaultcut, cfg.text)

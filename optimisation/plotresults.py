@@ -7,7 +7,7 @@ y=[]
 error=[]
 
 def scattergraph(source):
-    with open(source, 'rb') as csvfile:
+    with open(source + ".csv", 'rb') as csvfile:
         reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
         i=0
         for row in reader:
@@ -19,5 +19,8 @@ def scattergraph(source):
                 error.append(float(row[2]))   
     plt.figure()
     plt.errorbar(x, y, yerr=error, linestyle='_', marker = 'o', color = 'r')
-    plt.ylim(0, 5*(10**-9))
+    plt.xlabel("BDT cut")
+    plt.ylabel("Expected upper limit on Branching Ratio")
+    plt.ylim(0, (10**-8))
+    plt.savefig(str(source)+".pdf")
     plt.show()

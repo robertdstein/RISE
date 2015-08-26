@@ -16,13 +16,13 @@ uppercut=5400
 
 ROOT.gROOT.SetBatch(True)
 
-def output(bdt, probk=0.2, probmu=0.2, probe=0.2, countoutput=False):
-    expcount = f.run(lower, upper, lowercut, uppercut, bdt, probk, probmu, probe)
+def output(bdt, probk=0.2, probmu=0.2, probe=0.2, countoutput=False, text=False):
+    expcount, aval = f.run(lower, upper, lowercut, uppercut, bdt, probk, probmu, probe, text)
     count = 20
     significance = False
     if expcount != None:
         while significance != True:
-            sig, eff, significance, peak = s.run(lower, upper, lowercut, uppercut, bdt, expcount, count, probk, probmu, probe)
+            sig, eff, significance, peak = s.run(lower, upper, lowercut, uppercut, bdt, expcount, aval, count, probk, probmu, probe, text)
             count +=20
         ratio, error = br.run(sig, eff)
         if countoutput == True:
