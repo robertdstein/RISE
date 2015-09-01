@@ -9,28 +9,32 @@ from sklearn.externals import joblib
 
 import calculate
 
-def run(Kmin=False, Emin=False, Mumin=False, defaultcut = 0.2, text=False):
-    argument = "bdt = 0.5, limit_bdt = (0.0, 0.99), error_bdt=0.1" 
+defaultbdtcut = 0.90
+defaultkcut = -4.0
+defaultecut = 4.0
+defaultmucut = 2.0
+
+
+def run(Kmin=False, Emin=False, Mumin=False, text=False):
+    argument = "bdt = " + str(defaultbdtcut) + ", limit_bdt = (0.0, 0.99), error_bdt=0.1" 
     if Kmin == True:
-        argument += ", probk = " + str(defaultcut) + ", limit_probk=(-5 ,5.), error_probk=0.1"
+        argument += ", probk = " + str(defaultkcut) + ", limit_probk=(-10, 7.), error_probk=0.1"
     else:
-        argument += ", probk = " + str(defaultcut) + ", fix_probk=True"
+        argument += ", probk = " + str(defaultkcut) + ", fix_probk=True"
     
     if Emin == True:
-        argument += ", probe = " + str(defaultcut) + ", limit_probe=(-5,5.), error_probe = 0.1"
+        argument += ", probe = " + str(defaultecut) + ", limit_probe=(-10, 7.), error_probe = 0.1"
     else:
-        argument += ", probe = " + str(defaultcut) + ", fix_probe=True"
+        argument += ", probe = " + str(defaultecut) + ", fix_probe=True"
     
     if Mumin == True:
-        argument += ", probmu = " + str(defaultcut) + ", limit_probmu=(-5,5.), error_probmu=0.1"
+        argument += ", probmu = " + str(defaultmucut) + ", limit_probmu=(-10, 7.), error_probmu=0.1"
     else:
-        argument += ", probmu=" + str(defaultcut) + ", fix_probmu=True"
+        argument += ", probmu=" + str(defaultmucut) + ", fix_probmu=True"
     
-    argument += ", countoutput = False, fix_countoutput=True, text = " + str(text) + ", fix_text=True, errordef=(10**-9)"
+    argument += ", countoutput = False, fix_countoutput=True, text = " + str(text) + ", fix_text=True, dynamic = False, fix_dynamic=True, errordef=(10**-9)"
     
     m = eval("Minuit(calculate.output," +  argument + ")")
-    
-    print m.print_param()  
     
     m.migrad()
 

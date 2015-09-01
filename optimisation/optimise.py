@@ -14,22 +14,25 @@ parser.add_argument("-m", "--minimise", action="store_true")
 parser.add_argument("-mk", "--minimisek", action="store_true")
 parser.add_argument("-me", "--minimisee", action="store_true")
 parser.add_argument("-mmu", "--minimisemu", action="store_true")
+parser.add_argument("-d", "--dynamic", action="store_true")
 parser.add_argument("-t", "--text", action="store_true")
-parser.add_argument("-s", "--source", default="results.csv")
-parser.add_argument("-bdti", "--bdtinterval", default=0.01)
-parser.add_argument("-bdtl", "--bdtlowerlim", default=0.70)
-parser.add_argument("-bdtu", "--bdtupperlim", default=0.99)
+parser.add_argument("-s", "--source", default="results")
+parser.add_argument("-v", "--variable", default="bdt")
+parser.add_argument("-vi", "--variableinterval", default=0.01)
+parser.add_argument("-vl", "--variablelowerlim", default=0.70)
+parser.add_argument("-vu", "--variableupperlim", default=0.99)
 parser.add_argument("-c", "--defaultcut", default=0.0)
+parser.add_argument("-r", "--ratio", action="store_true")
 
 cfg = parser.parse_args()
 
-#Automatically calculates the branching ratio for a range of BDT values, outputting results in a csv file 
+#Automatically calculates the branching ratio for a range of variable values, outputting results in a csv file 
 
 if cfg.automate == True:
     import automate as a
-    a.process("results.csv", cfg.bdtinterval, cfg.bdtlowerlim, cfg.bdtupperlim, cfg.text)
+    a.process("results.csv", cfg.variable, cfg.variableinterval, cfg.variablelowerlim, cfg.variableupperlim, text=cfg.text)
 
-#Reads results from a csv file, and plots a scatter graph of BDT value against branching ratio
+#Reads results from a csv file, and plots a scatter graph of variable value against branching ratio
 
 if cfg.plot==True:
     import plotresults as p
@@ -37,4 +40,8 @@ if cfg.plot==True:
 
 if cfg.minimise == True:
     import minimise as m
-    m.run(cfg.minimisek, cfg.minimisee, cfg.minimisemu, cfg.defaultcut, cfg.text)
+    m.run(cfg.minimisek, cfg.minimisee, cfg.minimisemu, cfg.text)
+
+if cfg.ratio == True:
+    import calculate as c
+    c.output(text=True)

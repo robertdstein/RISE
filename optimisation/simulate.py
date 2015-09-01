@@ -3,24 +3,24 @@ import math
 from sklearn.externals import joblib
 from uncertainties import ufloat
 
-def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk =0.0, probe = 0.0, probmu = 0.0, graph = False, text = False):
+def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk =0.0, probe = 0.0, probmu = 0.0, text = False, graph = False):
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
     ROOT.RooMsgService.instance().setSilentMode(True)
     
     #Create a Monte Carlo dataset with a selection
     
-    datasource = "MC_Bplus_Kplusmue_resampled_newProbNN.root"
+    datasource = "MC_Bplus_Kplusmue_newresampled.root"
     
-    tree = "DecayTree"
+    tree = "default"
     filename = "/net/storage03/data/users/rstein/tuples/qsq/" + datasource
     f = ROOT.TFile(filename)
     t = f.Get(tree)
     t.SetBranchStatus("*",0)
     t.SetBranchStatus("B_M", 1)
     t.SetBranchStatus("BDT", 1)
-    t.SetBranchStatus("Kplus_newProbNNk", 1)
-    t.SetBranchStatus("muplus_newProbNNmu", 1)
-    t.SetBranchStatus("eminus_newProbNNe", 1)
+    t.SetBranchStatus("Kplus_PIDK_corrected", 1)
+    t.SetBranchStatus("muplus_PIDmu_corrected", 1)
+    t.SetBranchStatus("eminus_PIDe_corrected", 1)
     t.SetBranchStatus("Kplus_isMuonLoose", 1)
     t.SetBranchStatus("Kplus_InAccMuon", 1)
     t.SetBranchStatus("muplus_ProbNNghost", 1)
@@ -31,19 +31,19 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk 
     var = ROOT.RooRealVar("B_M", "m(K^{+}#mu^{+}e^{-})",lowercut, uppercut)
     BDT = ROOT.RooRealVar("BDT", "", float(BDTprob), 1)
     
-    kplus = ROOT.RooRealVar("Kplus_newProbNNk", "", 0.0, 1)
-    muplus = ROOT.RooRealVar("muplus_newProbNNmu", "", 0, 1)
-    eminus = ROOT.RooRealVar("eminus_newProbNNe", "", 0, 1)
+    kplus = ROOT.RooRealVar("Kplus_PIDK_corrected", "", -10, 15)
+    muplus = ROOT.RooRealVar("muplus_PIDmu_corrected", "", -10, 15)
+    eminus = ROOT.RooRealVar("eminus_PIDe_corrected", "", -10, 15)
     
     kplusmuonloose = ROOT.RooRealVar("Kplus_isMuonLoose", "", 0.0, 1)
     kplusinaccmuon = ROOT.RooRealVar("Kplus_InAccMuon", "", 0, 1)
     muplusghost = ROOT.RooRealVar("muplus_ProbNNghost", "", 0, 1)
     eminusghost = ROOT.RooRealVar("eminus_ProbNNghost", "", 0, 1)
     kplusghost = ROOT.RooRealVar("Kplus_ProbNNghost", "", 0, 1)
-    psim = ROOT.RooRealVar("Psi_M", "", 0, 1)    
+    psim = ROOT.RooRealVar("Psi_M", "", 0, uppercut)    
        
     
-    partselection = "(BDT >"  + str(BDTprob) + ") && (Kplus_newProbNNk > " + str(probk) + ") && (muplus_newProbNNmu > " + str(probmu) + ") && (eminus_newProbNNe > " + str(probe) +")&& (Kplus_isMuonLoose == 0) && (Kplus_InAccMuon == 1) && (eminus_newProbNNe > 0.05) && (Kplus_newProbNNk > 0.05) && (muplus_newProbNNmu > 0.05) && (Psi_M < 3000 || Psi_M >3200)"
+    partselection = "(BDT >"  + str(BDTprob) + ") && (Kplus_PIDK_corrected > " + str(probk) + ") && (muplus_PIDmu_corrected > " + str(probmu) + ") && (eminus_PIDe_corrected > " + str(probe) +")&& (Kplus_isMuonLoose == 0) && (Kplus_InAccMuon == 1) && (Psi_M < 3000 || Psi_M >3200)"
     
     selection = "(B_M < " + str(uppercut) + ") && (B_M > " + str(lowercut) + " ) && " + partselection
     
@@ -169,4 +169,4 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk 
         print time.asctime(time.localtime()), "Efficiency is", efficiency
     ds.Delete()
     f.Close()
-    return ufloat(sig,err), efficiency, significance, peak
+    return ufloat(sig,err), efficiency, significance, peak, err

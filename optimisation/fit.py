@@ -2,7 +2,7 @@ import argparse, ROOT, time
 import array
 from sklearn.externals import joblib
 
-def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, probmu = 0.0, graph = False, text=False):
+def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, probmu = 0.0, text=False, graph = False):
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
     ROOT.RooMsgService.instance().setSilentMode(True)
     
@@ -24,9 +24,9 @@ def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, pro
     var = ROOT.RooRealVar("B_M", "m(K^{+}#mu^{+}e^{-})",lower, upper)
     BDT = ROOT.RooRealVar("BDT", "", float(BDTprob), 1)
     
-    kplus = ROOT.RooRealVar("Kplus_newProbNNk", "", 0, 1)
-    muplus = ROOT.RooRealVar("muplus_newProbNNmu", "", 0, 1)
-    eminus = ROOT.RooRealVar("eminus_newProbNNe", "", 0, 1)
+    kplus = ROOT.RooRealVar("Kplus_newProbNNk", "", -10, 15)
+    muplus = ROOT.RooRealVar("muplus_newProbNNmu", "", -10, 15)
+    eminus = ROOT.RooRealVar("eminus_newProbNNe", "", -10, 15)
     
     selection = "(B_M <" + str(lowercut) +" || B_M >" + str(uppercut) + ") && (BDT >"  + str(BDTprob) + ") && (Kplus_newProbNNk > " + str(probk) + ") && (eminus_newProbNNe > " + str(probe) + ") && (muplus_newProbNNmu > " + str(probmu) + ")" 
     
@@ -95,7 +95,51 @@ def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, pro
     #Pass an Error to minimisation Algorithm, if fit does not converge/has 0 counts
     else:
         expectedbkg = None
+    
     minu.Delete()
     ds.Delete()
     f.Close()
+    
+    if f:
+        del f
+        #print "f"
+    if ds:
+        del ds
+        #print "ds"
+    if minu:
+        del minu
+        #print "minu"
+    if exp:
+        del exp
+        #print "exp"
+    if var:
+        del var
+        #print "var"
+    if fracInt:
+        del fracInt
+        #print "fracInt"
+    if fullInt:
+        del fullInt
+        #print "fullInt"
+ 
+    if t:
+        del t
+        #print "t"   
+    
+    if BDT:
+        del BDT
+        #print "BDT"
+        
+    if result:
+        del result
+        #print "result"
+    
+    if r:
+        del r
+        #print "r"
+    
+    if migradStatusCode:
+        del migradStatusCode
+        #print "migradStatusCode"
+    
     return expectedbkg, a.getVal()

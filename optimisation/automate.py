@@ -4,22 +4,23 @@ import calculate
 
 filename = 'results.csv'
 
-def process(source=filename, interval=0.1, lowerlim=0.7, upperlim=0.99, text=False):
-    with open(source, 'wb') as csvfile:
+def process(source=filename, variable = "bdt", interval=0.1, lowerlim=0.7, upperlim=0.99, text=False):
+    with open("sources/" + source, 'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(['bdt', 'ratio', 'error'])
-        
-        bdtvals = np.arange(float(lowerlim), float(upperlim), float(interval))
+        writer.writerow([str(variable), 'ratio', 'error'])
         
         #Iterate over a range of BDT probabilities and signal counts, exporting results to a csv file
         
-        for i in bdtvals:
-            bdt = i
-            print time.asctime(time.localtime()), "BDT cut is", i
-            ratio, error= calculate.output(bdt, countoutput=True, text=False)
-            data = [bdt, ratio, error]
+        vals = np.arange(float(lowerlim), float(upperlim), float(interval))
+        
+        for i in vals:
+            value = i
+            print time.asctime(time.localtime()), variable, "cut is", i
+            ratio, error= eval("calculate.output(" + str(variable) + "= " + str(value) + ", countoutput=True, text=" + str(text) + ", dynamic=True)")
+            data = [str(value), ratio, error]
             writer.writerow(data)
+        pass
 
     #Produces an output message with the duplicate number. Then sends an email notification.
 
