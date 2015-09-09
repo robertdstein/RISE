@@ -1,13 +1,13 @@
 import ROOT
 import array
 
-filename = "/net/storage03/data/users/rstein/tuples/qsq/MC_Bplus_Kplusmue_qsq.root"
-treename = "DecayTree"
+filename = "/net/storage03/data/users/rstein/tuples/raw/B2Kmue_MC_Merged.root"
+treename = "Bu2LLK_meLine/DecayTree"
 print "writing a tree"
 
 f = ROOT.TFile(filename, "READ")
 t = f.Get(treename)
-g = ROOT.TFile(filename[:filename.find(".root")] + "minPtBranch.root", "recreate")
+g = ROOT.TFile(filename[:filename.find(".root")] + "_minPtBranch.root", "recreate")
 
 tcount = t.GetEntriesFast()
 print "Contains", tcount, "entries"

@@ -1,20 +1,22 @@
 import ROOT
 import lhcbStyle as lhcb
-import reweight as r
-import rwmc
+import plotreweightinghistogram as r
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 c=ROOT.TCanvas()
 c.Divide(1,2)
 lhcb.setLHCbStyle()
 
-def plotsep(name, source, data, MC, bincount):
+#Creates plots of the seperation between reweighted MC and S-Weighted data
+
+def plotsep(name, source, data, MC, bincount, weighting=False):
     import csv
     def rowcount():
         with open(source, 'rb') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
             count = sum(1 for row in reader)
             return count
+    #Extracts the two Variables and ranges from a CSV file, and creates a PDF-page plot for each
     with open(source, 'rb') as csvfile:
         i = 0
         a = None
@@ -25,13 +27,13 @@ def plotsep(name, source, data, MC, bincount):
             variable = x[0]
             uplim = float(x[1])
             lowlim = float(x[2])
-            z = r.weight(variable, uplim, lowlim, data, MC, c, a, bincount)
+            z = r.plot(variable, uplim, lowlim, data, MC, c, bincount, weighting)
             if i == 0:
-                c.Print(name + str(bincount) + ".pdf(")
+                c.Print("output/" + name + "_" + str(bincount) + "1d_reweighted.pdf(")
             elif i == lim:
-                c.Print(name + str(bincount) + ".pdf)")
+                c.Print("output/" + name + "_" + str(bincount) + "1d_reweighted.pdf)")
             else:
-                c.Print(name + str(bincount) + ".pdf")
+                c.Print("output/" + name + "_" + str(bincount) + "1d_reweighted.pdf")
             i+=1
             del(a)
             a = z

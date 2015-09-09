@@ -2,7 +2,7 @@ import rwbe
 import argparse
 import pylab as pl
 
-name = "Reweight kmumu"
+name = "JPsi"
 source = 'sources/jsi2.csv'
 data = "with_bdt_kmumu_1112_isolncut"
 MC = "with_bdt_jpsik_12_mc_isoln_newpid_corr_allvars_etacut"

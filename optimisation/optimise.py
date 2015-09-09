@@ -15,6 +15,7 @@ parser.add_argument("-mk", "--minimisek", action="store_true")
 parser.add_argument("-me", "--minimisee", action="store_true")
 parser.add_argument("-mmu", "--minimisemu", action="store_true")
 parser.add_argument("-d", "--dynamic", action="store_true")
+parser.add_argument("-g", "--graph", action="store_true")
 parser.add_argument("-t", "--text", action="store_true")
 parser.add_argument("-s", "--source", default="results")
 parser.add_argument("-v", "--variable", default="bdt")
@@ -44,4 +45,4 @@ if cfg.minimise == True:
 
 if cfg.ratio == True:
     import calculate as c
-    c.output(text=True)
+    c.output(text=True, graph=cfg.graph)

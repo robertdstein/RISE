@@ -45,6 +45,5 @@ err = math.sqrt((eff) * (1-eff))/math.sqrt(tcount)
 efficiency = ufloat(eff, err)
 
 print "Sum of weights before is ", preweight
-print "Alternative Sum of Weights before is", k
 print "Sum of weights after is", postweight
 print "Efficiency is", efficiency

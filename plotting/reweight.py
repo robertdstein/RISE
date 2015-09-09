@@ -1,95 +1,41 @@
-import ROOT
+import rwbe
+import argparse
+import twodimensionalreweighting as tdrw
+import plotreweightedmc as plt
+import writekemu as wkemu
+import time
 
-def weight(var, lowerlim, upperlim, data, MC, c, oldw, bincount):
-    c.cd(2)
-    
-    
-    f = ROOT.TFile("/net/storage03/data/users/rstein/tuples/qsq/" + data + "_sweight.root")
-    t = f.Get("DecayTree")
-    
-    g = ROOT.TFile("/net/storage03/data/users/rstein/tuples/qsq/" + MC + "_weighted" + str(bincount) + ".root")
-    u = g.Get("DecayTree") 
-    
-    h = ROOT.TFile("/home/rstein/pythonscripts/reweighting.root")
-    v = h.Get("Histogram")
-    
-    rwmc = ROOT.TH1D("rwmc", "", bincount, lowerlim, upperlim)
-    RealData = ROOT.TH1D("RealData", "", bincount, lowerlim, upperlim)
-    Sweight= ROOT.TH1D("Sweight", "", bincount, lowerlim, upperlim)
-    MonteCarlo= ROOT.TH1D("MonteCarlo", "", bincount, lowerlim, upperlim)
-        
-    u.Draw(var+">>MonteCarlo")
-    u.Draw(var+">>rwmc", "weight")
-    t.Draw(var+">>RealData")
-    t.Draw(var + ">>Sweight", "sweight")
+parser = argparse.ArgumentParser(description='Reweight dataset based oin JPsi Data')
+parser.add_argument("-b", "--bincount", default=100)
+parser.add_argument("-r", "--reweight", action="store_true")
+parser.add_argument("-w", "--write", action="store_true")
+parser.add_argument("-cg", "--contourgraph", action="store_true")
+parser.add_argument("-fg", "--flatgraph", action="store_true")
+cfg = parser.parse_args()
 
-    if var == "B_PT":
-        Weight = v.ProjectionX("Weight1d", 0, bincount)
+name = "JPsi"
+source = 'sources/jsi2.csv'
+data = "DATA_Bplus_Kplusmumu_qsqcut"
+MC = "MC_Bplus_KplusJpsimumu_qsqcut"
 
-    else:
-        Weight = v.ProjectionY("Weight1d", 0, bincount)
-    
-    Weight.SetLineColor(ROOT.kOrange)
-    Weight.SetMarkerColor(ROOT.kOrange)
-    Weight.SetMarkerStyle(ROOT.kOpenCircle)
-    x = Weight.GetXaxis()
-    x.SetTitle(var)
-    x.SetTitleSize(0.04)
-    x.SetTitleOffset(1.15)
-    y = Weight.GetYaxis()
-    y.SetTitle("Relative Weight")
-    y.SetTitleSize(0.04)
-    y.SetTitleOffset(1.3)
-    
-    Weight.DrawCopy("E")
-    
-    c.cd(1)
-    
-    MonteCarlo.SetLineColor(ROOT.kBlue)
-    MonteCarlo.SetMarkerColor(ROOT.kBlue)
-    
-    RealData.SetLineColor(ROOT.kRed)
-    RealData.SetMarkerColor(ROOT.kRed)
-    RealData.SetMarkerStyle(ROOT.kOpenCircle)
-    
-    Sweight.SetLineColor(ROOT.kGreen)
-    Sweight.SetMarkerColor(ROOT.kGreen)
-    Sweight.SetMarkerStyle(ROOT.kOpenCircle)
+KemuMC = "MC_Bplus_Kplusmue_newresampled"
 
-    tcount = RealData.GetEntries()
-    ucount = MonteCarlo.GetEntries()
-    
-    datamax = RealData.GetMaximum()/tcount
-    mcmax = MonteCarlo.GetMaximum()/ucount
-    
-    if datamax > mcmax:    
-        x = RealData.GetXaxis()
-        x.SetTitle(var)
-        x.SetTitleSize(0.04)
-        x.SetTitleOffset(1.15)
-        y = RealData.GetYaxis()
-        y.SetTitle("Normalised Count")
-        y.SetTitleSize(0.04)
-        y.SetTitleOffset(1.3) 
-        RealData.DrawNormalized("E")
-        MonteCarlo.DrawNormalized("ESame")
-        Sweight.DrawNormalized("ESame")
-        rwmc.DrawNormalized("ESame")
+print time.asctime(time.localtime()), "Starting Code"
 
-    else:
-        x = MonteCarlo.GetXaxis()
-        x.SetTitle(var)
-        x.SetTitleSize(0.04)
-        x.SetTitleOffset(1.15)
-        y = MonteCarlo.GetYaxis()
-        y.SetTitle("Normalised Count")
-        y.SetTitleSize(0.04)
-        y.SetTitleOffset(1.3)        
-        MonteCarlo.DrawNormalized("E")
-        RealData.DrawNormalized("ESame")
-        Sweight.DrawNormalized("ESame")
-        rwmc.DrawNormalized("ESame")
-        
-    print var
+if cfg.reweight:
+    #Creates a 2D weighting histogram from the JPsiK data, and adds a weight branch to the JpsiK MC
+    tdrw.plotsep(name, source, data, MC, int(cfg.bincount))
     
-    return Weight
+if cfg.write:    
+    #Loads the 2D Histogram and uses it to add a weight branch to the MC Data
+    wkemu.extract(source, KemuMC, int(cfg.bincount))
+
+if cfg.contourgraph:
+    #Creates a PDF comparing the S Weighted Data and the Reweighted Monte Carlo Data
+     plt.plotsep(name, source, data, MC, int(cfg.bincount)) 
+
+if cfg.flatgraph:
+    #Creates histograms showing the seperation betweeen Sweighted Data and Reweighted Monte Carlo for single variables
+    rwbe.plotsep(name, source, data, MC, int(cfg.bincount), weighting=True)
+    
+print time.asctime(time.localtime()), "Code Finished"

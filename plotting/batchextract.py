@@ -1,10 +1,12 @@
 import ROOT
 import lhcbStyle as lhcb
-import plotupdatedfunctions as pf
+import plotfunctions as pf
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 c=ROOT.TCanvas()
 lhcb.setLHCbStyle()
+
+#Creates plots of the seperation between MC and Data
 
 def plotsep(name, source, data, datatree, MC, MCtree, weighting=False):
     import csv
@@ -13,6 +15,7 @@ def plotsep(name, source, data, datatree, MC, MCtree, weighting=False):
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
             count = sum(1 for row in reader)
             return count
+    #Extracts the Variables and ranges from a CSV file, and creates a PDF-page plot for each
     with open(source, 'rb') as csvfile:
         i = 0
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -25,9 +28,9 @@ def plotsep(name, source, data, datatree, MC, MCtree, weighting=False):
             lowlim = float(x[2])
             pf.output(variable, uplim, lowlim, data, datatree, MC, MCtree, weighting)
             if i == 0:
-                c.Print(name + ".pdf(")
+                c.Print("output/" + name + ".pdf(")
             elif i == lim:
-                c.Print(name + ".pdf)")
+                c.Print("output/" + name + ".pdf)")
             else:
-                c.Print(name + ".pdf")
+                c.Print("output/" + name + ".pdf")
             i+=1

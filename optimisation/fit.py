@@ -2,24 +2,12 @@ import argparse, ROOT, time
 import array
 from sklearn.externals import joblib
 
-def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, probmu = 0.0, text=False, graph = False):
+def run(f, t, lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, probmu = 0.0, text=False, graph = False):
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
     ROOT.RooMsgService.instance().setSilentMode(True)
     
     #Generate dataset from B to K mu e raw data with selection
-    
-    datasource = "DATA_Bplus_Kplusmue_BDTcut_newProbNN.root"
-    
-    tree = "DecayTree"
-    filename = "/net/storage03/data/users/rstein/tuples/qsq/" + datasource
-    f = ROOT.TFile(filename)
-    t = f.Get(tree)
-    t.SetBranchStatus("*",0)
-    t.SetBranchStatus("B_M", 1)
-    t.SetBranchStatus("BDT", 1)
-    t.SetBranchStatus("Kplus_newProbNNk", 1)
-    t.SetBranchStatus("muplus_newProbNNmu", 1)
-    t.SetBranchStatus("eminus_newProbNNe", 1)
+
         
     var = ROOT.RooRealVar("B_M", "m(K^{+}#mu^{+}e^{-})",lower, upper)
     BDT = ROOT.RooRealVar("BDT", "", float(BDTprob), 1)
@@ -48,20 +36,19 @@ def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, pro
     if graph == True:
         c=ROOT.TCanvas()
         frame = var.frame()
-        ds.plotOn(frame)
+        ds.plotOn(frame, ROOT.RooFit.Binning(20))
     
     var.setRange("R1", lower, lowercut)
     var.setRange("R2", uppercut, upper)
     var.setRange("R3", lowercut, uppercut)
     var.setRange("R4", lower, upper)
 
-    r = exp.createNLL(ds, ROOT.RooFit.Range("R1,R2"), ROOT.RooFit.NumCPU(8))
-    minu = ROOT.RooMinuit(r)
+    minu = ROOT.RooMinuit(exp.createNLL(ds, ROOT.RooFit.Range("R1,R2"), ROOT.RooFit.NumCPU(1)))
     minu.setStrategy(2)
     
     migradStatusCode = minu.migrad()
     
-    hesseStatusCode = minu.hesse();
+    hesseStatusCode = minu.hesse()
     
     result = minu.save()
     
@@ -72,11 +59,7 @@ def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, pro
         print time.asctime(time.localtime()), "Plotting data"
         exp.plotOn(frame, ROOT.RooFit.LineColor(ROOT.kRed))
         frame.Draw()
-        c.Print("Bmassfit.pdf(")
-        c.SetLogy()
-        frame.Draw()
-        c.Print("Bmassfit.pdf)")
-        raw_input("prompt")
+        c.Print("output/Bmassfit.pdf")
     
     if text ==True:
         print time.asctime(time.localtime()), "Fit Complete!"
@@ -98,48 +81,53 @@ def run(lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, pro
     
     minu.Delete()
     ds.Delete()
-    f.Close()
+    del migradStatusCode
+    del hesseStatusCode
+    result.Delete()
+    del covarianceQuality
+    del minosStatusCode
     
-    if f:
-        del f
-        #print "f"
-    if ds:
-        del ds
-        #print "ds"
-    if minu:
-        del minu
-        #print "minu"
-    if exp:
-        del exp
-        #print "exp"
-    if var:
-        del var
-        #print "var"
-    if fracInt:
-        del fracInt
-        #print "fracInt"
-    if fullInt:
-        del fullInt
-        #print "fullInt"
- 
-    if t:
-        del t
-        #print "t"   
     
-    if BDT:
-        del BDT
-        #print "BDT"
-        
-    if result:
-        del result
-        #print "result"
-    
-    if r:
-        del r
-        #print "r"
-    
-    if migradStatusCode:
-        del migradStatusCode
-        #print "migradStatusCode"
+ #   if f:
+ #       del f
+ #       #print "f"
+ #   if ds:
+ #       del ds
+ #       #print "ds"
+ #   if minu:
+ #       del minu
+ #       #print "minu"
+ #   if exp:
+ #       del exp
+ #       #print "exp"
+ #   if var:
+ #       del var
+ #       #print "var"
+ #   if fracInt:
+ #       del fracInt
+ #       #print "fracInt"
+ #   if fullInt:
+ #       del fullInt
+ #       #print "fullInt"
+ #
+ #   if t:
+ #       del t
+ #       #print "t"   
+ #   
+ #   if BDT:
+ #       del BDT
+ #       #print "BDT"
+ #       
+ #   if result:
+ #       del result
+ #       #print "result"
+ #   
+ #   if r:
+ #       del r
+ #       #print "r"
+ #   
+ #   if migradStatusCode:
+ #       del migradStatusCode
+ #       #print "migradStatusCode"
     
     return expectedbkg, a.getVal()

@@ -1,12 +1,11 @@
 import argparse, ROOT, time
-import lhcbStyle as lhcb
 import array
 
 start = time.time()
-print time.asctime(time.localtime())
+print time.asctime(time.localtime()), "Code Started"
 
 parser = argparse.ArgumentParser(description='Fit for B_M from dataset')
-parser.add_argument('-s', '--source', type=str,  choices=['data', 'sim'], default="data")
+parser.add_argument('-s', '--source', default="DATA_Bplus_Kplusmumu_qsq")
 parser.add_argument("-d", "--debug", action="store_true")
 parser.add_argument("-g", "--graph", action="store_true")
 parser.add_argument("-l", "--mlower", default=5175)
@@ -15,17 +14,11 @@ parser.add_argument("-u", "--mupper", default=5475)
 cfg = parser.parse_args()
 
 if not cfg.debug:
-	print "supressing fit output"
+	print time.asctime(time.localtime()), "Supressing Fit Output"
 	ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
 	ROOT.RooMsgService.instance().setSilentMode(True)
 
-lhcb.setLHCbStyle()
-
-if cfg.source == "data":
-    datasource = "DATA_Bplus_Kplusmumu_qsq.root"
-
-if cfg.source == "sim":
-    datasource = "MC_Bplus_KplusJpsimumu_qsqcut.root"
+datasource = cfg.source + ".root"
     
 tree = "DecayTree"
 filename = "/net/storage03/data/users/rstein/tuples/qsq/" + datasource
@@ -36,12 +29,12 @@ t.SetBranchStatus("B_M", 1)
 
 var = ROOT.RooRealVar("B_M", "m(K^{+}#mu^{+}#mu^{-})",int(cfg.mlower), int(cfg.mupper))
 
-print "Making Data Set..."
+print time.asctime(time.localtime()),"Making Data Set..."
 
 ds = ROOT.RooDataSet("ds", "", t, ROOT.RooArgSet(var))
 ds.Print()
 
-print "Fitting..."
+print time.asctime(time.localtime()),"Fitting..."
 
 bincount = 100    
 mean = ROOT.RooRealVar("mean", "", 5285, int(cfg.mlower), int(cfg.mupper))
@@ -72,29 +65,12 @@ c=ROOT.TCanvas()
 frame = var.frame()
 ds.plotOn(frame)
 
-if cfg.source == "data":
-    r = fullModel.fitTo(ds, ROOT.RooFit.Save(True), ROOT.RooFit.NumCPU(8))
-    r.Print("v")
-    print "plotting data"
-    fullModel.plotOn(frame)
-    fullModel.plotOn(frame, ROOT.RooFit.Components("sigModel"), ROOT.RooFit.LineColor(ROOT.kRed))
-    fullModel.plotOn(frame, ROOT.RooFit.Components("exp"), ROOT.RooFit.LineColor(ROOT.kGreen))
-    
-if cfg.source == "sim":
-    r = sigModel.fitTo(ds, ROOT.RooFit.Save(True), ROOT.RooFit.NumCPU(8))
-    r.Print("v")
-    sigModel.plotOn(frame)
-    frame.Draw()
-    raw_input("prompt")
-
-if cfg.graph:
-    print "Plotting data"
-    frame.Draw()
-    c.Print("Bmassfit.pdf(")
-    c.SetLogy()
-    frame.Draw()
-    c.Print("Bmassfit.pdf)")
-    raw_input("prompt")
+r = fullModel.fitTo(ds, ROOT.RooFit.Save(True), ROOT.RooFit.NumCPU(8))
+r.Print("v")
+print time.asctime(time.localtime()), "Plotting data"
+fullModel.plotOn(frame)
+fullModel.plotOn(frame, ROOT.RooFit.Components("sigModel"), ROOT.RooFit.LineColor(ROOT.kRed))
+fullModel.plotOn(frame, ROOT.RooFit.Components("exp"), ROOT.RooFit.LineColor(ROOT.kGreen))
 
 sigma1.setConstant(True)
 sigma2.setConstant(True)
@@ -104,35 +80,31 @@ n1.setConstant(True)
 a.setConstant(True)
 frac.setConstant(True)
    
-print "Making S Weights..."
+print time.asctime(time.localtime()), "Making S Weights..."
 
-if cfg.source == "data":
-    sData = ROOT.RooStats.SPlot("sData","An SPlot", ds, fullModel, ROOT.RooArgList(signalYield, combinatorialYield))
-
-if cfg.source == "sim":
-    sData = ROOT.RooStats.SPlot("sData","An SPlot", ds, sigModel, ROOT.RooArgList(frac))
+sData = ROOT.RooStats.SPlot("sData","An SPlot", ds, fullModel, ROOT.RooArgList(signalYield, combinatorialYield))
 
 sData.Print("V")
 sData.GetYieldFromSWeight("signalYield")
 sData.GetYieldFromSWeight("combinatorialYield")
 
-print "writing a tree"
+print time.asctime(time.localtime()), "Writing a Tree"
 
 g = ROOT.TFile(filename[:filename.find(".root")] + "_sweight.root", "recreate")
 tcount = t.GetEntriesFast()
-print "Contains", tcount, "entries"
+print time.asctime(time.localtime()),"Contains", tcount, "entries"
 
-print "Cloning Tree..."
+print time.asctime(time.localtime()),"Cloning Tree..."
 t.SetBranchStatus("*",1)
 nt=t.CloneTree(-1, "fast")
-print "Tree Cloned!"
+print time.asctime(time.localtime()),"Tree Cloned!"
 
 res_tuple = {}
 j=0
 o = (array.array('f',[0]))
 brBranch = nt.Branch('sweight', o, 'sweight/F')
 
-print "Filling S-Weight Branch"
+print time.asctime(time.localtime()),"Filling S-Weight Branch"
 
 for i in range(0, tcount):
     nt.GetEntry(i)
@@ -143,15 +115,15 @@ for i in range(0, tcount):
         j+=1
     brBranch.Fill()
         
-print "Optimising"    
+print time.asctime(time.localtime()),"Optimising"    
 nt.OptimizeBaskets()
-print "Writing"
+print time.asctime(time.localtime()),"Writing"
 nt.Write("",ROOT.TObject.kOverwrite)
 
-print "closing", g, f
+print time.asctime(time.localtime()),"Closing", g, f
 g.Close() 
 f.Close()
  
 end = time.time()
-print time.asctime(time.localtime())
+print "Code completed", time.asctime(time.localtime())
 print "time taken", end-start

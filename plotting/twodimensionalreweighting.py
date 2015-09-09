@@ -1,14 +1,21 @@
 import ROOT
-import math
+import math, time
 from uncertainties import ufloat
 import lhcbStyle as lhcb
 import array
 
-def reweight(name, var1, lowerlim1, upperlim1, var2, lowerlim2, upperlim2, data, MC, c, oldw, bincount):
+def reweight(name, var1, lowerlim1, upperlim1, var2, lowerlim2, upperlim2, data, MC, c, bincount):
     
+    print time.asctime(time.localtime()), "Creating Empty Histogram"
+    
+    #Creates an empty Histogram to store the weights
     Weight = ROOT.TH2F("Weight", "", bincount, lowerlim1, upperlim1, bincount, lowerlim2, upperlim2)
     
     c.cd(1)
+    
+    #Open Trees containing the Monte Carlo and S-Weighted data, and plot two 2D Histograms which are saved as part of a PDF
+    
+    print time.asctime(time.localtime()), "Plotting 2D contour graphs"
     
     filename = "/net/storage03/data/users/rstein/tuples/qsq/" + MC
     
@@ -47,10 +54,15 @@ def reweight(name, var1, lowerlim1, upperlim1, var2, lowerlim2, upperlim2, data,
     y.SetTitleOffset(1.3) 
     MonteCarlo.SetTitle("Monte Carlo unweighted")
     MonteCarlo.DrawNormalized("ROOT.COLZ")
-    c.Print(name + str(bincount) + "2d.pdf(")
+    c.Print("output/" + name + "_"+ str(bincount) + "2d.pdf(")
     
     c=ROOT.TCanvas()
-        
+    
+    #Calculates a weight for each bin by dividing Sweight count by MC count
+    #To Prevent generation of infinities, only bins with an MC count greater than 0 are given a weight 
+    
+    print time.asctime(time.localtime()), "Calculating Weight Bins"
+            
     for i in range(0, bincount):
         for j in range (0, bincount):
             w=0
@@ -64,6 +76,10 @@ def reweight(name, var1, lowerlim1, upperlim1, var2, lowerlim2, upperlim2, data,
                 Weight.SetBinContent(i,j, 0)
                 Weight.SetBinError(i,j,0) 
     
+    #Plots the now-filled Weight Histogram and adds this to the PDF file (named dynamically based on bincount and optional name arguments)
+    
+    print time.asctime(time.localtime()), "Plotting Weight Histogram"
+    
     x = Weight.GetXaxis()
     x.SetTitle(var1)
     x.SetTitleSize(0.04)
@@ -75,12 +91,14 @@ def reweight(name, var1, lowerlim1, upperlim1, var2, lowerlim2, upperlim2, data,
     Weight.DrawCopy("ROOT.COLZ")
     
     
-    c.Print(name + str(bincount) + "2d.pdf")
+    c.Print("output/" + name + "_" + str(bincount) + "2d.pdf")
     Weight.SetMarkerSize(0.1)
     Weight.DrawCopy("e")
-    c.Print(name + str(bincount) + "2d.pdf)")
+    c.Print("output/" + name + "_"+ str(bincount) + "2d.pdf)")
     
     f.Close()
+    
+    #Creates a rewighting file, and saves the Histogram for later use
     
     h = ROOT.TFile("reweighting.root", "recreate")
         
@@ -88,12 +106,16 @@ def reweight(name, var1, lowerlim1, upperlim1, var2, lowerlim2, upperlim2, data,
     h.Write()
     h.Close()   
     
-    m = ROOT.TFile(filename + "_weighted" + str(bincount) + ".root", "recreate")
+    print time.asctime(time.localtime()), "Weight Histogram saved"
+    print time.asctime(time.localtime()), "Creating new Monte Carlo Tree at", filename + "_Weighted" + str(bincount) + ".root"
+    
+    #Creates a new MC TTree with a Weight Branch
+    m = ROOT.TFile(filename + "_Weighted" + str(bincount) + ".root", "recreate")
     
     ucount = u.GetEntriesFast()
-    print "Contains", ucount, "entries"
+    print time.asctime(time.localtime()), "Contains", ucount, "entries"
 
-    print "Cloning Tree..."
+    print time.asctime(time.localtime()), "Cloning Tree..."
     nt=u.CloneTree(-1, "fast")
 
     nt.SetBranchStatus("*",0)
@@ -101,7 +123,7 @@ def reweight(name, var1, lowerlim1, upperlim1, var2, lowerlim2, upperlim2, data,
     nt.SetBranchStatus("nSPDHits", 1)
 
     o = (array.array('d',[0]))
-    brBranch = nt.Branch('weight', o, 'weight/D')
+    brBranch = nt.Branch('Weight', o, 'Weight/D')
 
     bpt = (array.array('d',[0]))
     bptBranch = nt.GetBranch("B_PT")
@@ -111,9 +133,11 @@ def reweight(name, var1, lowerlim1, upperlim1, var2, lowerlim2, upperlim2, data,
     spdBranch = nt.GetBranch("nSPDHits")
     spdBranch.SetAddress(spd)
 
-    print "Tree Cloned!"
+    print time.asctime(time.localtime()), "Tree Cloned!"
 
-    print "Filling Branch..."
+    print time.asctime(time.localtime()), "Filling Branch..."
+    
+    #Calculates the weight for each entry, based on the bin it lies in
 
     for counter in xrange(ucount):
         nt.GetEntry(counter)
@@ -129,22 +153,19 @@ def reweight(name, var1, lowerlim1, upperlim1, var2, lowerlim2, upperlim2, data,
     nt.Write()
     m.Close()
 
-    print "Branch Filled!"
+    print time.asctime(time.localtime()), "Branch Filled!"
         
 c=ROOT.TCanvas()
 c.Divide(2,1)
 lhcb.setLHCbStyle()
 
+#Extracts the two reweighting variables and their ranges from a CSV file, and then runs the Reweight function above based this information
+
 def plotsep(name, source, data, MC, bincount):
     import csv
-    def rowcount():
-        with open(source, 'rb') as csvfile:
-            reader = csv.reader(csvfile, delimiter=',', quotechar='|')
-            count = sum(1 for row in reader)
-            return count
+    print time.asctime(time.localtime()), "Extracting information from " + str(source)
     with open(source, 'rb') as csvfile:
         i = 0
-        a = None
         reader = csv.reader(csvfile, delimiter=',', quotechar='|')
         v = []
         ul = []
@@ -155,5 +176,5 @@ def plotsep(name, source, data, MC, bincount):
             ul.append(float(x[1]))
             ll.append(float(x[2]))
             i+=1
-        reweight(name, v[0], ul[0], ll[0], v[1], ul[1], ll[1], data, MC, c, a, bincount)
+        reweight(name, v[0], ul[0], ll[0], v[1], ul[1], ll[1], data, MC, c,bincount)
         

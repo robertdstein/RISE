@@ -3,32 +3,12 @@ import math
 from sklearn.externals import joblib
 from uncertainties import ufloat
 
-def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk =0.0, probe = 0.0, probmu = 0.0, text = False, graph = False):
+def run(f, t, var, lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk =0.0, probe = 0.0, probmu = 0.0, text = False, graph = False):
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
     ROOT.RooMsgService.instance().setSilentMode(True)
     
-    #Create a Monte Carlo dataset with a selection
+    #Create a Monte Carlo dataset with a selection   
     
-    datasource = "MC_Bplus_Kplusmue_newresampled.root"
-    
-    tree = "default"
-    filename = "/net/storage03/data/users/rstein/tuples/qsq/" + datasource
-    f = ROOT.TFile(filename)
-    t = f.Get(tree)
-    t.SetBranchStatus("*",0)
-    t.SetBranchStatus("B_M", 1)
-    t.SetBranchStatus("BDT", 1)
-    t.SetBranchStatus("Kplus_PIDK_corrected", 1)
-    t.SetBranchStatus("muplus_PIDmu_corrected", 1)
-    t.SetBranchStatus("eminus_PIDe_corrected", 1)
-    t.SetBranchStatus("Kplus_isMuonLoose", 1)
-    t.SetBranchStatus("Kplus_InAccMuon", 1)
-    t.SetBranchStatus("muplus_ProbNNghost", 1)
-    t.SetBranchStatus("eminus_ProbNNghost", 1)
-    t.SetBranchStatus("Kplus_ProbNNghost", 1)
-    t.SetBranchStatus("Psi_M", 1)    
-    
-    var = ROOT.RooRealVar("B_M", "m(K^{+}#mu^{+}e^{-})",lowercut, uppercut)
     BDT = ROOT.RooRealVar("BDT", "", float(BDTprob), 1)
     
     kplus = ROOT.RooRealVar("Kplus_PIDK_corrected", "", -10, 15)
@@ -40,10 +20,10 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk 
     muplusghost = ROOT.RooRealVar("muplus_ProbNNghost", "", 0, 1)
     eminusghost = ROOT.RooRealVar("eminus_ProbNNghost", "", 0, 1)
     kplusghost = ROOT.RooRealVar("Kplus_ProbNNghost", "", 0, 1)
-    psim = ROOT.RooRealVar("Psi_M", "", 0, uppercut)    
-       
+    psim = ROOT.RooRealVar("Psi_M", "", 0, uppercut)  
+    bkgcat = ROOT.RooRealVar("B_BKGCAT", "", 0, 100)  
     
-    partselection = "(BDT >"  + str(BDTprob) + ") && (Kplus_PIDK_corrected > " + str(probk) + ") && (muplus_PIDmu_corrected > " + str(probmu) + ") && (eminus_PIDe_corrected > " + str(probe) +")&& (Kplus_isMuonLoose == 0) && (Kplus_InAccMuon == 1) && (Psi_M < 3000 || Psi_M >3200)"
+    partselection = "(BDT >"  + str(BDTprob) + ") && (Kplus_PIDK_corrected > " + str(probk) + ") && (muplus_PIDmu_corrected > " + str(probmu) + ") && (eminus_PIDe_corrected > " + str(probe) +")&& (Kplus_isMuonLoose == 0) && (Kplus_InAccMuon==1) && (Psi_M < 3000 || Psi_M >3200) && (B_BKGCAT == 10)"
     
     selection = "(B_M < " + str(uppercut) + ") && (B_M > " + str(lowercut) + " ) && " + partselection
     
@@ -51,7 +31,7 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk 
         print time.asctime(time.localtime()), "Selection contains", t.GetEntries(selection), "entries, out of a total of", t.GetEntriesFast(), "entries."
         print time.asctime(time.localtime()), "Making Data Set..."
 
-    ds = ROOT.RooDataSet("ds", "", t, ROOT.RooArgSet(var, BDT, kplus, muplus, eminus, kplusmuonloose, kplusinaccmuon, psim), partselection)
+    ds = ROOT.RooDataSet("ds", "", t, ROOT.RooArgSet(var, BDT, kplus, muplus, eminus, kplusmuonloose, kplusinaccmuon, psim, bkgcat), partselection)
     
     if text ==True:
         ds.Print()
@@ -75,13 +55,12 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk 
     cb1 = ROOT.RooCBShape("cb1","", var, mean, sigma1, alpha1, n1)
     cb2 = ROOT.RooCBShape("cb2","", var, mean, sigma2, alpha2, n2)
     sigModel = ROOT.RooAddPdf ("sigModel", "", ROOT.RooArgList(cb1, cb2), ROOT.RooArgList(frac))
-
-    frame = var.frame()
-    ds.plotOn(frame)
     
-    var.setRange("R1", lowercut, uppercut)
-    r = sigModel.fitTo(ds, ROOT.RooFit.Range("R1"), ROOT.RooFit.NumCPU(12))
-
+    if graph == True:
+        frame = var.frame()
+        ds.plotOn(frame)
+    
+    sigModel.fitTo(ds, ROOT.RooFit.Range("R1"), ROOT.RooFit.NumCPU(1))
 
     if graph == True:    
         sigModel.plotOn(frame)
@@ -93,7 +72,7 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk 
         frame.Draw()
     
     if text ==True:
-        print time.asctime(time.localtime()), "Fit Complete"    
+        print time.asctime(time.localtime()), "Fit Complete"
            
     sigma1.setConstant(True)
     sigma2.setConstant(True)
@@ -111,24 +90,26 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk 
     
     sigsim =sigModel.generate(ROOT.RooArgSet(var, BDT, kplus, muplus, eminus), float(count))
 
-    
     bkgsim =exp.generate(ROOT.RooArgSet(var, BDT, kplus, muplus, eminus), float(expcount))
+    
     if text == True:
         sigsim.Print()
         bkgsim.Print()
     
-    frame = var.frame()
     bkgsim.append(sigsim)
 
     newdata = bkgsim
-    newdata.plotOn(frame)
+    
+    if graph == True:
+        frame = var.frame()
+        newdata.plotOn(frame, ROOT.RooFit.Binning(10))
 
     signalYield = ROOT.RooRealVar("signalYield", "", float(count), 0, 100*float(count))
     combinatorialYield = ROOT.RooRealVar("combinatorialYield", "", expcount, 0, 10*expcount)
 
     fullModel = ROOT.RooAddPdf("fullmodel", "", ROOT.RooArgList(sigModel, exp), ROOT.RooArgList(signalYield, combinatorialYield))
     
-    r = fullModel.fitTo(newdata, ROOT.RooFit.NumCPU(12))
+    r = fullModel.fitTo(newdata, ROOT.RooFit.NumCPU(1))
     
     if graph == True:    
         fullModel.plotOn(frame, ROOT.RooFit.LineColor(ROOT.kOrange))
@@ -138,6 +119,7 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk 
     signalYield.setConstant(True)
     sig = signalYield.getVal()
     err = signalYield.getError()
+    
     if err != 0:
         peak = sig/err
     else:
@@ -161,12 +143,16 @@ def run(lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk 
         c.cd(2)
         print time.asctime(time.localtime()), "Plotting data"
         frame.Draw()
-        c.Print("newBmassfit.pdf")
-        raw_input("prompt")
-        
-    efficiency = float(t.GetEntries(selection))/float(t.GetEntriesFast())
-    if text ==True:
-        print time.asctime(time.localtime()), "Efficiency is", efficiency
+        c.Print("output/newBmassfit.pdf")
+           
+    sigsim.Delete()
     ds.Delete()
-    f.Close()
-    return ufloat(sig,err), efficiency, significance, peak, err
+    bkgsim.Delete()
+    newdata.Delete()
+    sigModel.Delete()
+    fullModel.Delete()
+
+    if r:
+        del r
+        
+    return ufloat(sig,err), t.GetEntries(selection), significance, peak, err, selection
