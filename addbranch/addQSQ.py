@@ -1,6 +1,8 @@
 import sys, ROOT, os
 import array
 
+#Adds a Q squared Branch to a Tree
+
 tuplePath = "/net/storage03/data/users/dberninghoff/B2Kll/Merged/"
 tupleName = "DATA_Bplus_Kplusmumu" 
 fullName = tuplePath + tupleName + ".root"
@@ -34,6 +36,8 @@ qsqBranch = nt.Branch("qsq", qsq, "qsq/D")
 Psi_M = (array.array('d',[0]))
 Psi_MBranch = nt.GetBranch("Psi_M")
 Psi_MBranch.SetAddress(Psi_M)
+
+#Calculates the Q-squared values by squaring Psi_M and scaling
 
 print "itterating over", nt.GetEntries() , "events"
 for i in range(nt.GetEntries()):

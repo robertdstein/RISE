@@ -22,7 +22,7 @@ def process(source=filename, variable = "bdt", interval=0.1, lowerlim=0.7, upper
             writer.writerow(data)
         pass
 
-    #Produces an output message with the duplicate number. Then sends an email notification.
+    #Produces an output message. Then sends an email notification.
 
     message = str(time.asctime(time.localtime())) + " Results saved in " + source
     print message

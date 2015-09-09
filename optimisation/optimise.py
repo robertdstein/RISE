@@ -39,9 +39,13 @@ if cfg.plot==True:
     import plotresults as p
     p.scattergraph(cfg.source)
 
+#Run a Minimisation algorith to find the optimal cuts
+
 if cfg.minimise == True:
     import minimise as m
     m.run(cfg.minimisek, cfg.minimisee, cfg.minimisemu, cfg.text)
+
+#Calculate the ratio precicely, and with all status messages displayed on screen
 
 if cfg.ratio == True:
     import calculate as c

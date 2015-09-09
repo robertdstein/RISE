@@ -6,7 +6,7 @@ ROOT.gROOT.SetBatch(ROOT.kTRUE)
 c=ROOT.TCanvas()
 lhcb.setLHCbStyle()
 
-#Creates plots of the seperation between MC and Data
+#Creates plots of the separation between MC and Data
 
 def plotsep(name, source, data, datatree, MC, MCtree, weighting=False):
     import csv

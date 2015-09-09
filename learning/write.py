@@ -12,6 +12,7 @@ from scipy import linalg
 import matplotlib as mpl
 from sklearn import mixture 
 
+#Defines the accepted categories
 name = "ul"   
 ncategories = 30
 filename = "/net/storage03/data/users/rstein/tuples/qsq/DATA_Bplus_Kplusmumu_qsqcut.root"
@@ -21,6 +22,8 @@ cut_tree= True
 
 if add_branch == True:
    
+    #adds a branch with the Designated category for each event
+    
     print time.asctime(time.localtime()), "Creating Tree"
 
     f = ROOT.TFile(filename)
@@ -58,7 +61,9 @@ if add_branch == True:
     f.Close()
     
 if cut_tree == True:
-
+    
+    #Creates a new tree after applying a cut based on an 'approved' list of categories    
+    
     print time.asctime(time.localtime()), "Creating Second Tree"
 
     h = ROOT.TFile(filename, "READ")

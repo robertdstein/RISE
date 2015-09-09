@@ -1,6 +1,8 @@
 import sys, ROOT, os, math, time
 import array
 
+#Adds a branch with transformed ProbNN branches, requiring less fine intervals for cutting/resampling
+
 tuplePath = "/net/storage03/data/users/rstein/tuples/qsq/"
 tupleName = "MC_Bplus_Kplusmue_BDT_eta"
 treeName = "DecayTree"
@@ -25,6 +27,8 @@ print('saving File to ' + nFileName)
 nf = ROOT.TFile(nFileName, "RECREATE")
 print "cloning tree..."
 nt = t.CloneTree(-1, 'fast')
+
+#Creates new Branches for each of the 3 primary ProbNN values
 
 nt.SetBranchStatus("*", 0)
 nt.SetBranchStatus("Kplus_ProbNNk", 1)
@@ -51,6 +55,9 @@ eminus_newProbNNeBranch = nt.Branch("eminus_newProbNNe", eminus_newProbNNe, "emi
 eminus_ProbNNe = (array.array('d',[0]))
 eminus_ProbNNeBranch = nt.GetBranch("eminus_ProbNNe")
 eminus_ProbNNeBranch.SetAddress(eminus_ProbNNe)
+
+#Fills the new transformed values for each ProbNN value
+#Returns an error value of -1000 if ProbNN is not greater than 0
 
 print "itterating over", nt.GetEntries() , "events"
 for i in range(nt.GetEntries()):
@@ -84,6 +91,8 @@ nf.Close()
 
 message = str(time.asctime(time.localtime())) + " Created new tree at /net/storage03/data/users/rstein/tuples/qsq/" + tupleName+ "_newProbNN.root"
 print message
+
+#Sends an email notification
 
 import os, sys
 sys.path.append('/home/rstein/pythonscripts/misc')

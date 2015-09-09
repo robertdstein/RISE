@@ -13,6 +13,9 @@ import matplotlib as mpl
 from sklearn import mixture    
     
 def run(name, fit, quick = False):
+    
+    #Loads the relevant data and fit
+    
     print time.asctime(time.localtime()), "Classifying Data"
     if quick == True:
         gmm = joblib.load('pickle/' + name + 'gmmquick.pkl')
@@ -31,7 +34,9 @@ def run(name, fit, quick = False):
     for i in range (0, len(v) -1):
         selection.append(i)
         i+=1
-
+    
+    #Fits for either DPGMM or GMM models    
+    
     if fit == "dpgmm":
         dpgmmpredictions = dpgmm.predict(data[:,selection])
     
@@ -57,6 +62,8 @@ def run(name, fit, quick = False):
 
     for i in range(len(data)):
         d.append(eval(arg))
+    
+    #Saves data with categories
     
     if quick == True:
         joblib.dump(d, "pickle/data" + name+ "q.pkl")

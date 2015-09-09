@@ -1,6 +1,8 @@
 import sys, ROOT, math, time
 import array
 
+#Adds a branch for ETA (Pseudorapidity)
+
 tuplePath = "/net/storage03/data/users/rstein/tuples/qsq/"
 tupleName = "MC_Bplus_Kplusmue_BDT"
 treeName = "DecayTree"
@@ -25,6 +27,8 @@ print('saving File to ' + nFileName)
 nf = ROOT.TFile(nFileName, "RECREATE")
 print "cloning tree..."
 nt = t.CloneTree(-1, 'fast')
+
+#Activates all necessary P and Pz branches
 
 nt.SetBranchStatus("*", 0)
 nt.SetBranchStatus("Kplus_P", 1)
@@ -67,6 +71,9 @@ eminus_PZ = (array.array('d',[0]))
 eminus_PZBranch = nt.GetBranch("eminus_PZ")
 eminus_PZBranch.SetAddress(eminus_PZ)
 
+#Calculates the values for the ETA branch using standard formula
+#If the value is less than -1 before log, an error value of -2000 is assigned instead
+
 print "itterating over", nt.GetEntries() , "events"
 for i in range(nt.GetEntries()):
     Kplus_PBranch.GetEntry(i)
@@ -100,6 +107,8 @@ nf.Close()
 
 message = str(time.asctime(time.localtime())) + " Created new tree at /net/storage03/data/users/rstein/tuples/qsq/" + tupleName+ "_eta.root"
 print message
+
+#Sends an email notification
 
 import os, sys
 sys.path.append('/home/rstein/pythonscripts/misc')

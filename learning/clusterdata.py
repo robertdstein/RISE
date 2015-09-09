@@ -14,6 +14,8 @@ def run(source, quick=False):
     f = ROOT.TFile("/net/storage03/data/users/rstein/tuples/qsq/DATA_Bplus_Kplusmumu_qsqcut_sweight.root")
     t = f.Get("DecayTree")
     
+    #Reads the variable list from the source csv file, and creates Pickle files with this information
+    
     v = []
     lim = []
 
@@ -31,6 +33,8 @@ def run(source, quick=False):
     else:
         tcount = t.GetEntriesFast()
 
+    #Extracts the datasets with the selected variables
+    
     info = []
 
     frac = 0.5
@@ -54,7 +58,9 @@ def run(source, quick=False):
         info.append(k)
 
     data = np.array(info)
-
+    
+    #Saves the data arrays as Pickle files    
+    
     if quick == True:
         joblib.dump(data, 'pickle/dataq.pkl')
         

@@ -1,6 +1,8 @@
 import sys, ROOT, math, time
 import array
 
+#Clones ProbNN branches with pid-resamplimg naming conventions, to allow merged datasets 
+
 tuplePath = "/net/storage03/data/users/rstein/tuples/qsq/"
 tupleName = "DATA_Bplus_Kplusmue_BDTcut"
 treeName = "DecayTree"

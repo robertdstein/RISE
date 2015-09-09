@@ -1,6 +1,8 @@
 import ROOT
 import array
 
+#Add a branch with the minimum transverse momentum
+
 filename = "/net/storage03/data/users/rstein/tuples/raw/B2Kmue_MC_Merged.root"
 treename = "Bu2LLK_meLine/DecayTree"
 print "writing a tree"
@@ -31,6 +33,8 @@ electronBranch = nt.GetBranch("eminus_PT")
 electronBranch.SetAddress(electron)
 
 print "Tree Cloned!"
+
+#Fills the branch with the smaller of the electron and muon PT
 
 print "Filling Branch..."
 

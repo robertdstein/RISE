@@ -15,6 +15,8 @@ from sklearn import mixture
 def run(name, ncategories, fit, quick = False):
     print time.asctime(time.localtime()), "Producing histograms"
     
+    #Loads the datasets and sets parameters for specific fit
+    
     lim = joblib.load("pickle/limits.pkl")
     v = joblib.load("pickle/variables.pkl")
     
@@ -34,6 +36,9 @@ def run(name, ncategories, fit, quick = False):
     from matplotlib.backends.backend_pdf import PdfPages
     pp = PdfPages('output/' + name + '.pdf')
     
+    #Iteratively produces a histogram for each category identified in the data
+    #Does not produce a histogram if a category has less than ten events
+    
     for i in range(0, maxcategory):
         
         d={}
@@ -49,6 +54,8 @@ def run(name, ncategories, fit, quick = False):
                     a.append(l[m])
                     d[key] = a
                     m+=1
+        
+        #Prints the number of events in the category
         
         print "For Category ", i, " there are ", len(d["string0"]), "events"
         plt.ioff()
@@ -82,6 +89,9 @@ def run(name, ncategories, fit, quick = False):
                 center = (bins[:-1] + bins[1:]) / 2
                 ax.errorbar(center, hist, yerr=err, fmt='o', c=colour, label='S (train)')
                 k+=1
+            
+            #Saves figures as PDF pages
+            
             pp.savefig(orientation='portrait')
         
     pp.close()

@@ -7,6 +7,8 @@ import pylab as pl
 import argparse
 from subprocess import call
 
+#Hub page for the unsupervised learning scripts
+
 start = time.time()
 print time.asctime(time.localtime()), "Starting Code"
 
@@ -27,7 +29,9 @@ cfg = parser.parse_args()
 
 if cfg.source !="clvar.csv":
     raise NameError("Invalid Source Selection!")
-    
+
+#Creates datsets with variables saved in the CSV file cfg.source
+
 if cfg.dataset == True:
     import clusterdata as ds
     if cfg.quick == True:
@@ -35,13 +39,17 @@ if cfg.dataset == True:
     else:
         ds.run(cfg.source)
 
+#Applies unsupervised learning to the datasets
+
 if cfg.learn == True:
     import learn as l
     if cfg.quick == True:
         l.run(str(cfg.name + "quick"), cfg.alpha, cfg.groups, quick = True)
     else:
         l.run(cfg.name, cfg.alpha, cfg.groups)
-        
+
+#Does something, probably.    
+                        
 if cfg.plot == True:
     import plot as p
     if cfg.quick == True:
@@ -49,12 +57,16 @@ if cfg.plot == True:
     else:
         p.run(cfg.name)
         
+#Classifies the data into a varying number of categories
+
 if cfg.classify == True:
     import classify as c
     if cfg.quick == True:
         c.run(cfg.name + "quick", cfg.fit, quick = True)
     else:
         c.run(cfg.name, cfg.fit)
+
+#Creates Histograms for each category identied by learning algorithm
 
 if cfg.onedhistogram == True:
     import histogram as h

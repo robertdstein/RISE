@@ -15,6 +15,8 @@ from sklearn import mixture
 def run(name, nalpha, groups, quick = False):
     print time.asctime(time.localtime()), "Learning!" 
     
+    #Loads the variables list
+    
     v = joblib.load("pickle/variables.pkl")
     
     selection = []
@@ -29,7 +31,9 @@ def run(name, nalpha, groups, quick = False):
 
     else:
         data = joblib.load("pickle/data.pkl")
-
+    
+    #Commences unsupervised learning processes    
+    
     gmm = mixture.GMM(n_components=7, covariance_type='diag')
     gmm.fit(data[:,selection])
 

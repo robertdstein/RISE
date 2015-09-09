@@ -14,6 +14,9 @@ from sklearn import mixture
     
 def run(name, quick = False):
     print time.asctime(time.localtime()), "Fitting and Plotting Points"
+    
+    #Loads relevant data and unsupervised learning
+    
     if quick == True:
         gmm = joblib.load('pickle/' + name + 'gmmquick.pkl')
         dpgmm = joblib.load('pickle/' + name + 'dpgmmquick.pkl')
@@ -24,6 +27,8 @@ def run(name, quick = False):
         data = joblib.load('pickle/data.pkl')
     
     color_iter = itertools.cycle(['r', 'g', 'b', 'c', 'm', 'y', 'k'])
+    
+    #Plots B_M  graphs for each subactergory that the data has been grouped into
     
     for i, (clf, title) in enumerate([(gmm, 'GMM'),
                                   (dpgmm, 'Dirichlet Process GMM')]):

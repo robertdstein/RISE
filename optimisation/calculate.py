@@ -17,6 +17,8 @@ uppercut=5400
 ROOT.gROOT.SetBatch(True)
 ROOT.RooAbsData.setDefaultStorageType(ROOT.RooAbsData.Tree)
 
+#Opens the necessary Trees
+
 datasource1 = "DATA_Bplus_Kplusmue_BDTcut_newProbNN.root"
     
 tree1 = "DecayTree"
@@ -56,7 +58,7 @@ var.setRange("R1", lowercut, uppercut)
 
 c = ROOT.TCanvas()
 
-def output(bdt=0.967, probk=-3.5, probmu=0.9, probe=4.525, countoutput=False, text=False, dynamic=False, graph =False):
+def output(bdt=0.96, probk=-2.0, probmu=2.0, probe=-10, countoutput=False, text=False, dynamic=False, graph =False):
     #Fit to find expected background count and exponential distribution parameter
     expcount, aval = f.run(file1, t1, lower, upper, lowercut, uppercut, bdt, probk, probmu, probe, text=text, graph=graph)
     count = 17

@@ -1,8 +1,12 @@
 import argparse, ROOT, time
 import array
 
+#Adds an S-Weight Branch to a Dataset
+
 start = time.time()
 print time.asctime(time.localtime()), "Code Started"
+
+#take optional arguments for B-Mass Range 
 
 parser = argparse.ArgumentParser(description='Fit for B_M from dataset')
 parser.add_argument('-s', '--source', default="DATA_Bplus_Kplusmumu_qsq")
@@ -19,7 +23,9 @@ if not cfg.debug:
 	ROOT.RooMsgService.instance().setSilentMode(True)
 
 datasource = cfg.source + ".root"
-    
+
+#Load tree and fit a signal+background model to the data
+      
 tree = "DecayTree"
 filename = "/net/storage03/data/users/rstein/tuples/qsq/" + datasource
 f = ROOT.TFile(filename)
@@ -67,6 +73,9 @@ ds.plotOn(frame)
 
 r = fullModel.fitTo(ds, ROOT.RooFit.Save(True), ROOT.RooFit.NumCPU(8))
 r.Print("v")
+
+#Plot the data, as well as the fit components, on a graph
+
 print time.asctime(time.localtime()), "Plotting data"
 fullModel.plotOn(frame)
 fullModel.plotOn(frame, ROOT.RooFit.Components("sigModel"), ROOT.RooFit.LineColor(ROOT.kRed))
@@ -79,7 +88,9 @@ alpha2.setConstant(True)
 n1.setConstant(True)
 a.setConstant(True)
 frac.setConstant(True)
-   
+  
+#Make s-Weights
+
 print time.asctime(time.localtime()), "Making S Weights..."
 
 sData = ROOT.RooStats.SPlot("sData","An SPlot", ds, fullModel, ROOT.RooArgList(signalYield, combinatorialYield))
@@ -87,6 +98,8 @@ sData = ROOT.RooStats.SPlot("sData","An SPlot", ds, fullModel, ROOT.RooArgList(s
 sData.Print("V")
 sData.GetYieldFromSWeight("signalYield")
 sData.GetYieldFromSWeight("combinatorialYield")
+
+#Add a new S-Weight branch to a tree
 
 print time.asctime(time.localtime()), "Writing a Tree"
 

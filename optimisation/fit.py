@@ -87,47 +87,4 @@ def run(f, t, lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.
     del covarianceQuality
     del minosStatusCode
     
-    
- #   if f:
- #       del f
- #       #print "f"
- #   if ds:
- #       del ds
- #       #print "ds"
- #   if minu:
- #       del minu
- #       #print "minu"
- #   if exp:
- #       del exp
- #       #print "exp"
- #   if var:
- #       del var
- #       #print "var"
- #   if fracInt:
- #       del fracInt
- #       #print "fracInt"
- #   if fullInt:
- #       del fullInt
- #       #print "fullInt"
- #
- #   if t:
- #       del t
- #       #print "t"   
- #   
- #   if BDT:
- #       del BDT
- #       #print "BDT"
- #       
- #   if result:
- #       del result
- #       #print "result"
- #   
- #   if r:
- #       del r
- #       #print "r"
- #   
- #   if migradStatusCode:
- #       del migradStatusCode
- #       #print "migradStatusCode"
-    
     return expectedbkg, a.getVal()
