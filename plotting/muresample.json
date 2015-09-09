@@ -1,9 +1,0 @@
-{
-    "tasks": [
-        {
-            "resampler_path" : "/home/rstein/pidTool/lhcb_pid_resample/Mu_Stripping20_MagnetUp.pkl",
-            "features" : ["muplus_P", "muplus_LOKI_ETA", "nTracks"],
-            "pids" : [{"kind" : "Mu_V3ProbNNmu", "name" : "muplus_PIDmu_corrected"}]
-        },
-        ]
-}
