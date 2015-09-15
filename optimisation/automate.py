@@ -1,10 +1,10 @@
 import ROOT, time, os, csv
 import numpy as np
-import calculate
+import newcalculate
 
 filename = 'results.csv'
 
-def process(source=filename, variable = "bdt", interval=0.1, lowerlim=0.7, upperlim=0.99, text=False):
+def process(source=filename, variable = "bdt", interval=0.1, lowerlim=0.7, upperlim=0.99, text=False, random=False):
     with open("sources/" + source, 'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -17,7 +17,7 @@ def process(source=filename, variable = "bdt", interval=0.1, lowerlim=0.7, upper
         for i in vals:
             value = i
             print time.asctime(time.localtime()), variable, "cut is", i
-            ratio, error= eval("calculate.output(" + str(variable) + "= " + str(value) + ", countoutput=True, text=" + str(text) + ", dynamic=True)")
+            ratio, error= eval("newcalculate.output(" + str(variable) + "= " + str(value) + ", countoutput=True)")
             data = [str(value), ratio, error]
             writer.writerow(data)
         pass

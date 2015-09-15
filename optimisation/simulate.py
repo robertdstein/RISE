@@ -3,7 +3,7 @@ import math
 from sklearn.externals import joblib
 from uncertainties import ufloat
 
-def run(f, t, var, lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk =0.0, probe = 0.0, probmu = 0.0, text = False, graph = False):
+def run(f, t, CommonSelection, var, lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk =0.0, probe = 0.0, probmu = 0.0, text = False, graph = False, random=False):
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
     ROOT.RooMsgService.instance().setSilentMode(True)
     
@@ -21,17 +21,62 @@ def run(f, t, var, lower, upper, lowercut, uppercut, BDTprob, expcount, aval, co
     eminusghost = ROOT.RooRealVar("eminus_ProbNNghost", "", 0, 1)
     kplusghost = ROOT.RooRealVar("Kplus_ProbNNghost", "", 0, 1)
     psim = ROOT.RooRealVar("Psi_M", "", 0, uppercut)  
-    bkgcat = ROOT.RooRealVar("B_BKGCAT", "", 0, 100)  
+    bkgcat = ROOT.RooRealVar("B_BKGCAT", "", 0, 100)
+    
+    Bl0hadronTOS = ROOT.RooRealVar("B_L0HadronDecision_TOS", "", 0, 2)
+    Bl0muonTOS = ROOT.RooRealVar("B_L0MuonDecision_TOS", "", 0, 2)
+    Bl0electronTOS = ROOT.RooRealVar("B_L0ElectronDecision_TOS", "", 0, 2)
+    
+    Bhlt1muonTOS = ROOT.RooRealVar("B_Hlt1TrackMuonDecision_TOS", "", 0, 2)
+    Bhlt1allTOS = ROOT.RooRealVar("B_Hlt1TrackAllL0Decision_TOS", "", 0, 2)
+    
+    Bhltmu3bodyTOS = ROOT.RooRealVar("B_Hlt2TopoMu3BodyBBDTDecision_TOS", "", 0, 2)
+    Bhlt3bodyTOS = ROOT.RooRealVar("B_Hlt2Topo3BodyBBDTDecision_TOS", "", 0, 2)
+    
+    Bl0hadronTIS = ROOT.RooRealVar("B_L0HadronDecision_TIS", "", 0, 2)
+    Bl0muonTIS = ROOT.RooRealVar("B_L0MuonDecision_TIS", "", 0, 2)
+    Bl0electronTIS = ROOT.RooRealVar("B_L0ElectronDecision_TIS", "", 0, 2)
+    
+    Bhlt1muonTIS = ROOT.RooRealVar("B_Hlt1TrackMuonDecision_TIS", "", 0, 2)
+    Bhlt1allTIS = ROOT.RooRealVar("B_Hlt1TrackAllL0Decision_TIS", "", 0, 2)
+    
+    Bhltmu3bodyTIS = ROOT.RooRealVar("B_Hlt2TopoMu3BodyBBDTDecision_TIS", "", 0, 2)
+    Bhlt3bodyTIS = ROOT.RooRealVar("B_Hlt2Topo3BodyBBDTDecision_TIS", "", 0, 2)
     
     partselection = "(BDT >"  + str(BDTprob) + ") && (Kplus_PIDK_corrected > " + str(probk) + ") && (muplus_PIDmu_corrected > " + str(probmu) + ") && (eminus_PIDe_corrected > " + str(probe) +")&& (Kplus_isMuonLoose == 0) && (Kplus_InAccMuon==1) && (Psi_M < 3000 || Psi_M >3200) && (B_BKGCAT == 10)"
     
-    selection = "(B_M < " + str(uppercut) + ") && (B_M > " + str(lowercut) + " ) && " + partselection
+    selection = CommonSelection + "(B_M < " + str(uppercut) + ") && (B_M > " + str(lowercut) + " ) && " + partselection
+    
+    args = ROOT.RooArgSet(var, BDT, kplus, muplus, eminus, kplusmuonloose, kplusinaccmuon, psim, bkgcat)
+    args.add(muplusghost)
+    args.add(kplusghost)
+    args.add(eminusghost)
+    
+    args.add(Bl0hadronTOS)
+    args.add(Bl0muonTOS)
+    args.add(Bl0electronTOS)
+    
+    args.add(Bhlt1allTOS)
+    args.add(Bhlt1muonTOS)
+    
+    args.add(Bhltmu3bodyTOS)
+    args.add(Bhlt3bodyTOS)
+    
+    args.add(Bl0hadronTIS)
+    args.add(Bl0muonTIS)
+    args.add(Bl0electronTIS)
+    
+    args.add(Bhlt1allTIS)
+    args.add(Bhlt1muonTIS)
+    
+    args.add(Bhltmu3bodyTIS)
+    args.add(Bhlt3bodyTIS)
     
     if text ==True:
         print time.asctime(time.localtime()), "Selection contains", t.GetEntries(selection), "entries, out of a total of", t.GetEntriesFast(), "entries."
         print time.asctime(time.localtime()), "Making Data Set..."
 
-    ds = ROOT.RooDataSet("ds", "", t, ROOT.RooArgSet(var, BDT, kplus, muplus, eminus, kplusmuonloose, kplusinaccmuon, psim, bkgcat), partselection)
+    ds = ROOT.RooDataSet("ds", "", t, args, selection)
     
     if text ==True:
         ds.Print()
@@ -87,6 +132,9 @@ def run(f, t, var, lower, upper, lowercut, uppercut, BDTprob, expcount, aval, co
     
     a = ROOT.RooRealVar("a", "", aval)
     exp = ROOT.RooExponential("exp", "", var, a)
+    
+    rand = ROOT.RooRandom.randomGenerator()
+    rand.SetSeed(0)
     
     sigsim =sigModel.generate(ROOT.RooArgSet(var, BDT, kplus, muplus, eminus), float(count))
 

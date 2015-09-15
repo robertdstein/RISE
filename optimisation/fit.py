@@ -2,7 +2,7 @@ import argparse, ROOT, time
 import array
 from sklearn.externals import joblib
 
-def run(f, t, lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, probmu = 0.0, text=False, graph = False):
+def run(f, t, CommonSelection, lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.0, probmu = 0.0, text=False, graph = False):
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
     ROOT.RooMsgService.instance().setSilentMode(True)
     
@@ -16,13 +16,64 @@ def run(f, t, lower, upper, lowercut, uppercut, BDTprob, probk = 0.0, probe = 0.
     muplus = ROOT.RooRealVar("muplus_newProbNNmu", "", -10, 15)
     eminus = ROOT.RooRealVar("eminus_newProbNNe", "", -10, 15)
     
-    selection = "(B_M <" + str(lowercut) +" || B_M >" + str(uppercut) + ") && (BDT >"  + str(BDTprob) + ") && (Kplus_newProbNNk > " + str(probk) + ") && (eminus_newProbNNe > " + str(probe) + ") && (muplus_newProbNNmu > " + str(probmu) + ")" 
+    muplusghost = ROOT.RooRealVar("muplus_ProbNNghost", "", 0, 1)
+    eminusghost = ROOT.RooRealVar("eminus_ProbNNghost", "", 0, 1)
+    kplusghost = ROOT.RooRealVar("Kplus_ProbNNghost", "", 0, 1)
+    
+    MuonMass =  ROOT.RooRealVar("MuonKaonMass", "", 0, 10000)   
+    ElectronMass =  ROOT.RooRealVar("ElectronKaonMass", "", 0, 10000)
+    
+    Bl0hadronTOS = ROOT.RooRealVar("B_L0HadronDecision_TOS", "", 0, 2)
+    Bl0muonTOS = ROOT.RooRealVar("B_L0MuonDecision_TOS", "", 0, 2)
+    Bl0electronTOS = ROOT.RooRealVar("B_L0ElectronDecision_TOS", "", 0, 2)
+    
+    Bhlt1muonTOS = ROOT.RooRealVar("B_Hlt1TrackMuonDecision_TOS", "", 0, 2)
+    Bhlt1allTOS = ROOT.RooRealVar("B_Hlt1TrackAllL0Decision_TOS", "", 0, 2)
+    
+    Bhltmu3bodyTOS = ROOT.RooRealVar("B_Hlt2TopoMu3BodyBBDTDecision_TOS", "", 0, 2)
+    Bhlt3bodyTOS = ROOT.RooRealVar("B_Hlt2Topo3BodyBBDTDecision_TOS", "", 0, 2)
+    
+    Bl0hadronTIS = ROOT.RooRealVar("B_L0HadronDecision_TIS", "", 0, 2)
+    Bl0muonTIS = ROOT.RooRealVar("B_L0MuonDecision_TIS", "", 0, 2)
+    Bl0electronTIS = ROOT.RooRealVar("B_L0ElectronDecision_TIS", "", 0, 2)
+    
+    Bhlt1muonTIS = ROOT.RooRealVar("B_Hlt1TrackMuonDecision_TIS", "", 0, 2)
+    Bhlt1allTIS = ROOT.RooRealVar("B_Hlt1TrackAllL0Decision_TIS", "", 0, 2)
+    
+    Bhltmu3bodyTIS = ROOT.RooRealVar("B_Hlt2TopoMu3BodyBBDTDecision_TIS", "", 0, 2)
+    Bhlt3bodyTIS = ROOT.RooRealVar("B_Hlt2Topo3BodyBBDTDecision_TIS", "", 0, 2)
+    
+    selection = CommonSelection + "(B_M <" + str(lowercut) +" || B_M >" + str(uppercut) + ") && (BDT >"  + str(BDTprob) + ") && (Kplus_newProbNNk > " + str(probk) + ") && (eminus_newProbNNe > " + str(probe) + ") && (muplus_newProbNNmu > " + str(probmu) + ")" 
+    
+    args = ROOT.RooArgSet(var, BDT, kplus, muplus, eminus, muplusghost, eminusghost, kplusghost, Bl0hadronTOS)
+    args.add(Bl0muonTOS)
+    args.add(Bl0electronTOS)
+    
+    args.add(Bhlt1allTOS)
+    args.add(Bhlt1muonTOS)
+    
+    args.add(Bhltmu3bodyTOS)
+    args.add(Bhlt3bodyTOS)
+    
+    args.add(Bl0hadronTIS)
+    args.add(Bl0muonTIS)
+    args.add(Bl0electronTIS)
+    
+    args.add(Bhlt1allTIS)
+    args.add(Bhlt1muonTIS)
+    
+    args.add(Bhltmu3bodyTIS)
+    args.add(Bhlt3bodyTIS)
+    
+    args.add(MuonMass)
+    args.add(ElectronMass)
+    
     
     if text ==True:
         print time.asctime(time.localtime()), "Selection contains", t.GetEntries(selection), "entries, out of a total of", t.GetEntriesFast(), "entries."
         print time.asctime(time.localtime()), "Making Data Set..."
 
-    ds = ROOT.RooDataSet("ds", "", t, ROOT.RooArgSet(var, BDT, kplus, muplus, eminus), selection)
+    ds = ROOT.RooDataSet("ds", "", t, args, selection)
     
     #Fit the data, ignoring the blind region which has no events
     if text ==True:

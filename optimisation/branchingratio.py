@@ -10,6 +10,8 @@ f = ufloat(0.401, 0.008)
 
 def run(sigyield, entries, ffile, t, selection):
     
+    c = ROOT.TCanvas()
+    
     #Finds the change in weight before and after applying the selection
     t.SetBranchStatus("Weight", 1)
 
@@ -23,15 +25,18 @@ def run(sigyield, entries, ffile, t, selection):
     PreMean = PreData.GetMean()
     PreWeight = PreCount*PreMean
     
+    PreData.Delete()
+    
     PostCount = t.GetEntries(selection)
     PostMean = PostData.GetMean()
     PostWeight = PostCount * PostMean
+    
+    PostData.Delete()
+    c.Close()
 
     eff = float(PostWeight/PreWeight)
     err = math.sqrt((eff) * (1.0-eff))/math.sqrt(PreCount)
     cutefficiency = ufloat(eff, err)
-    
-    print time.asctime(time.localtime()), "Cut Efficiency would be", cutefficiency
     
     #Calculates the Reconstruction Efficiency
     
@@ -56,4 +61,5 @@ def run(sigyield, entries, ffile, t, selection):
     br = sigyield / factor
     
     print time.asctime(time.localtime()), "Branching Ratio would be", br
+    print "eficiency is", cutefficiency
     return br.nominal_value, br.std_dev

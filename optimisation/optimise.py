@@ -24,6 +24,7 @@ parser.add_argument("-vl", "--variablelowerlim", default=0.70)
 parser.add_argument("-vu", "--variableupperlim", default=0.99)
 parser.add_argument("-c", "--defaultcut", default=0.0)
 parser.add_argument("-r", "--ratio", action="store_true")
+parser.add_argument("-rand", "--random", action="store_true")
 
 cfg = parser.parse_args()
 
@@ -31,7 +32,7 @@ cfg = parser.parse_args()
 
 if cfg.automate == True:
     import automate as a
-    a.process("results.csv", cfg.variable, cfg.variableinterval, cfg.variablelowerlim, cfg.variableupperlim, text=cfg.text)
+    a.process("results.csv", cfg.variable, cfg.variableinterval, cfg.variablelowerlim, cfg.variableupperlim, text=cfg.text, random = cfg.random)
 
 #Reads results from a csv file, and plots a scatter graph of variable value against branching ratio
 
@@ -48,5 +49,5 @@ if cfg.minimise == True:
 #Calculate the ratio precicely, and with all status messages displayed on screen
 
 if cfg.ratio == True:
-    import calculate as c
-    c.output(text=True, graph=cfg.graph)
+    import newcalculate as c
+    c.output()
