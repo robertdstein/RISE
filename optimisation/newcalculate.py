@@ -96,7 +96,7 @@ CommonSelection = ("(muplus_ProbNNghost < 0.3) && (eminus_ProbNNghost<0.3) && (K
                     "&& (B_Hlt1TrackMuonDecision_TOS == 1 || B_Hlt1TrackAllL0Decision_TOS == 1 || B_Hlt1TrackMuonDecision_TIS == 1 || B_Hlt1TrackAllL0Decision_TIS == 1)" +
                     "&& (B_Hlt2TopoMu3BodyBBDTDecision_TOS==1 || B_Hlt2Topo3BodyBBDTDecision_TOS == 1 || B_Hlt2TopoMu3BodyBBDTDecision_TIS==1 || B_Hlt2Topo3BodyBBDTDecision_TIS == 1) &&")
 
-def output(bdt=0.976, probk=-1.5, probmu=1.5, probe=0.9, countoutput=False, text=False, graph=False, sigma=5):
+def output(bdt=0.976, probk=-1.5, probmu=1.45, probe=0.9, countoutput=False, text=False, graph=False, sigma=5):
     #Fit to find expected background count and exponential distribution parameter
     
     expcount, aval = f.run(file1, t1, CommonSelection, lower, upper, lowercut, uppercut, bdt, probk, probmu, probe, text=text, graph=graph)
