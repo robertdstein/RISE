@@ -1,0 +1,10 @@
+B_IPCHI2_OWNPV,0,30
+B_PT,0,10000
+B_IP_OWNPV,0,0.2
+muplus_CosTheta,-1,1
+B_TAU,0,0.003
+PT_Min,0,3000
+BDT,0,1
+qsq,0,30
+ElectronKaonMass,0,6000
+MuonKaonMass,0,6000

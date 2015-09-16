@@ -8,7 +8,7 @@ lhcb.setLHCbStyle()
 
 #Creates plots of the separation between MC and Data
 
-def plotsep(name, source, data, datatree, MC, MCtree, weighting=False):
+def plotsep(name, source, data, datatree, MC, MCtree, weighting=False, bincount=600):
     import csv
     def rowcount():
         with open(source, 'rb') as csvfile:
@@ -26,7 +26,7 @@ def plotsep(name, source, data, datatree, MC, MCtree, weighting=False):
             print variable
             uplim = float(x[1])
             lowlim = float(x[2])
-            pf.output(variable, uplim, lowlim, data, datatree, MC, MCtree, weighting)
+            pf.output(variable, uplim, lowlim, data, datatree, MC, MCtree,  weighting, bincount)
             if i == 0:
                 c.Print("output/" + name + ".pdf(")
             elif i == lim:

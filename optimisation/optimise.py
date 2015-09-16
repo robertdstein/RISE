@@ -22,6 +22,7 @@ parser.add_argument("-v", "--variable", default="bdt")
 parser.add_argument("-vi", "--variableinterval", default=0.01)
 parser.add_argument("-vl", "--variablelowerlim", default=0.70)
 parser.add_argument("-vu", "--variableupperlim", default=0.99)
+parser.add_argument("-sig", "--sigma", default=5)
 parser.add_argument("-c", "--defaultcut", default=0.0)
 parser.add_argument("-r", "--ratio", action="store_true")
 parser.add_argument("-rand", "--random", action="store_true")
@@ -50,4 +51,4 @@ if cfg.minimise == True:
 
 if cfg.ratio == True:
     import newcalculate as c
-    c.output()
+    c.output(sigma = cfg.sigma)

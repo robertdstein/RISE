@@ -1,12 +1,11 @@
 import ROOT
 
 #Plots a graph for the seperation between MC and Data
-def output(var, lowerlim, upperlim, data, datatree, MC, MCtree, weighting):
-    bincount = 600
-    f = ROOT.TFile("/net/storage03/data/users/rstein/tuples/raw/" + data)
+def output(var, lowerlim, upperlim, data, datatree, MC, MCtree, weighting, bincount=600):
+    f = ROOT.TFile("/net/storage03/data/users/rstein/tuples/" + data)
     t = f.Get(datatree)
 
-    g = ROOT.TFile("/net/storage03/data/users/rstein/tuples/raw/" + MC)
+    g = ROOT.TFile("/net/storage03/data/users/rstein/tuples/" + MC)
     u = g.Get(MCtree)
         
     RealData = ROOT.TH1D("RealData", "", bincount, lowerlim, upperlim)

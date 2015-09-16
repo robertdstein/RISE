@@ -96,7 +96,7 @@ CommonSelection = ("(muplus_ProbNNghost < 0.3) && (eminus_ProbNNghost<0.3) && (K
                     "&& (B_Hlt1TrackMuonDecision_TOS == 1 || B_Hlt1TrackAllL0Decision_TOS == 1 || B_Hlt1TrackMuonDecision_TIS == 1 || B_Hlt1TrackAllL0Decision_TIS == 1)" +
                     "&& (B_Hlt2TopoMu3BodyBBDTDecision_TOS==1 || B_Hlt2Topo3BodyBBDTDecision_TOS == 1 || B_Hlt2TopoMu3BodyBBDTDecision_TIS==1 || B_Hlt2Topo3BodyBBDTDecision_TIS == 1) &&")
 
-def output(bdt=0.0, probk=-10, probmu=0.0, probe=6.0, countoutput=False, text=False, graph=False):
+def output(bdt=0.976, probk=-1.5, probmu=1.5, probe=0.9, countoutput=False, text=False, graph=False, sigma=5):
     #Fit to find expected background count and exponential distribution parameter
     
     expcount, aval = f.run(file1, t1, CommonSelection, lower, upper, lowercut, uppercut, bdt, probk, probmu, probe, text=text, graph=graph)
@@ -107,8 +107,14 @@ def output(bdt=0.0, probk=-10, probmu=0.0, probe=6.0, countoutput=False, text=Fa
                         ")&& (Kplus_isMuonLoose == 0) && (Kplus_InAccMuon==1) && (Psi_M < 3000 || Psi_M >3200) && (B_BKGCAT == 10)")
     
         selection = CommonSelection + "(B_M < " + str(uppercut) + ") && (B_M > " + str(lowercut) + " ) && " + partselection
-
-        signal = p.getExpectedLimit(expcount)
+        
+        if int(sigma) == 2:
+            percentage = 0.95
+        
+        elif int(sigma) == 5:
+            percentage = 0.999999426697        
+        
+        signal = p.getExpectedLimit(expcount, percentage)
         
         entries = signal + expcount
         
