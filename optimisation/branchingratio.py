@@ -8,7 +8,7 @@ luminosity2011 = 10**15
 luminosity2012 = 2* (10**15)
 f = ufloat(0.401, 0.008)
 
-def run(sigyield, entries, ffile, t, selection):
+def run(sigyield, ffile, t, selection):
     
     c = ROOT.TCanvas()
     

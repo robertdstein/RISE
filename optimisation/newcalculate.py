@@ -8,9 +8,11 @@ import poisson as p
 import simulate as s
 from iminuit import Minuit
 
+#SCRIPT TO CALCULATE THE NUMBER OF REQUIRED SIGNAL EVENTS
+
 #Fix blinded region and B Mass fit range
 
-lower=4500
+lower=4900
 upper=6250
 lowercut=5100
 uppercut=5400
@@ -96,17 +98,21 @@ CommonSelection = ("(muplus_ProbNNghost < 0.3) && (eminus_ProbNNghost<0.3) && (K
                     "&& (B_Hlt1TrackMuonDecision_TOS == 1 || B_Hlt1TrackAllL0Decision_TOS == 1 || B_Hlt1TrackMuonDecision_TIS == 1 || B_Hlt1TrackAllL0Decision_TIS == 1)" +
                     "&& (B_Hlt2TopoMu3BodyBBDTDecision_TOS==1 || B_Hlt2Topo3BodyBBDTDecision_TOS == 1 || B_Hlt2TopoMu3BodyBBDTDecision_TIS==1 || B_Hlt2Topo3BodyBBDTDecision_TIS == 1) &&")
 
-def output(bdt=0.976, probk=-1.5, probmu=1.45, probe=0.9, countoutput=False, text=False, graph=False, sigma=5):
+def output(bdt=0.976, probk=0.53, probmu=1.41, probe=-0.80, countoutput=False, text=False, graph=False, sigma=5):
     #Fit to find expected background count and exponential distribution parameter
     
     expcount, aval = f.run(file1, t1, CommonSelection, lower, upper, lowercut, uppercut, bdt, probk, probmu, probe, text=text, graph=graph)
     
     if expcount != None:
+        
+        #Construct full selection for efficiency calculations
         partselection = ("(BDT >"  + str(bdt) + ") && (Kplus_PIDK_corrected > " + str(probk) + ") && (muplus_PIDmu_corrected > " + 
                         str(probmu) + ") && (eminus_PIDe_corrected > " + str(probe) +
                         ")&& (Kplus_isMuonLoose == 0) && (Kplus_InAccMuon==1) && (Psi_M < 3000 || Psi_M >3200) && (B_BKGCAT == 10)")
     
         selection = CommonSelection + "(B_M < " + str(uppercut) + ") && (B_M > " + str(lowercut) + " ) && " + partselection
+        
+        #Determine the required Chisquare percentage for 2 sigma or 5 sigma Branching Ratio
         
         if int(sigma) == 2:
             percentage = 0.95
@@ -114,11 +120,13 @@ def output(bdt=0.976, probk=-1.5, probmu=1.45, probe=0.9, countoutput=False, tex
         elif int(sigma) == 5:
             percentage = 0.999999426697        
         
+        #Using the expected background count and required percentage, calculate the required signal count through Poisson Statistics
+        
         signal = p.getExpectedLimit(expcount, percentage)
         
-        entries = signal + expcount
+        #Pass the signal count and selection to the branching ratio calculator
         
-        ratio, error = br.run(signal, entries, file2, t2, selection)     
+        ratio, error = br.run(signal, file2, t2, selection)     
                     
         #return ratio and error for the purpose of a csv output and graph
         if countoutput == True:

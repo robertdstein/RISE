@@ -4,6 +4,8 @@ import array
 from uncertainties import ufloat
 import math
 
+#Calulating the Efficiency of cuts to S-Weighted data
+
 start = time.time()
 print time.asctime(time.localtime()), "Calculating Efficiency"
 
@@ -36,6 +38,8 @@ u.Draw("sweight>>PostData")
 
 tcount = t.GetEntriesFast()
 ucount = u.GetEntriesFast()
+
+#Quickly calculate the sum of weights
 
 preweight = PreData.GetMean()*tcount
 postweight = PostData.GetMean()*ucount

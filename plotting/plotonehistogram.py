@@ -2,7 +2,7 @@ import ROOT, argparse
 
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 
-parser = argparse.ArgumentParser(description='Reweight dataset based oin JPsi Data')
+parser = argparse.ArgumentParser(description='Reweight dataset based on JPsi Data')
 parser.add_argument("-s", "--source", default="MC_Bplus_Kplusmue_newresampled_Weighted_4vectormass.root")
 parser.add_argument("-t", "--tree", default="default")
 parser.add_argument("-b", "--bins", default="100")

@@ -8,6 +8,8 @@ import fit as f
 import simulate as s
 from iminuit import Minuit
 
+#OUTDATES METHOD FOR CALCULATING UPPER LIMIT
+
 #Fix blinded region and B Mass fit range
 
 lower=4500

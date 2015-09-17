@@ -3,6 +3,8 @@ import math
 from sklearn.externals import joblib
 from uncertainties import ufloat
 
+#OUTDATED MODULE USED IN CALCULATE.PY TO ITERATIVELY SIMULATE COMPOSITE DATASETS
+
 def run(f, t, CommonSelection, var, lower, upper, lowercut, uppercut, BDTprob, expcount, aval, count, probk =0.0, probe = 0.0, probmu = 0.0, text = False, graph = False, random=False):
     ROOT.RooMsgService.instance().setGlobalKillBelow(ROOT.RooFit.ERROR)
     ROOT.RooMsgService.instance().setSilentMode(True)

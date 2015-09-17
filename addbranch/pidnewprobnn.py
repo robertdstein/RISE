@@ -100,14 +100,3 @@ for i in range(nt.GetEntries()):
 nt.SetBranchStatus("*", 1)
 nt.Write("DecayTree")
 nf.Close()
-
-#Sends an email notification
-
-message = str(time.asctime(time.localtime())) + " Created new tree at /net/storage03/data/users/rstein/tuples/pid/" + tupleName+ ".root"
-print message
-
-import os, sys
-sys.path.append('/home/rstein/pythonscripts/misc')
-import sendemail as se
-name = os.path.basename(__file__)
-se.send(name, message)

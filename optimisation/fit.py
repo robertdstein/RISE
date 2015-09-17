@@ -138,4 +138,7 @@ def run(f, t, CommonSelection, lower, upper, lowercut, uppercut, BDTprob, probk 
     del covarianceQuality
     del minosStatusCode
     
+    #Return the expected background count, as well as the 'a' parameter for the shape of the background 
+    #('a' parameter redundant for latest newcalculate.py)
+    
     return expectedbkg, a.getVal()

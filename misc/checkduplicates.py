@@ -4,8 +4,7 @@ import argparse
 
 print time.asctime(time.localtime()), "Starting Code"
 
-#Parse Arguments to trigger each BDT module that is needed, as well as additional arguments
-
+#Parse Arguments to modify functions 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--tree", default = "DATA_Bplus_Kplusmue_BDT")
 parser.add_argument("-o", "--output", action="store_true")

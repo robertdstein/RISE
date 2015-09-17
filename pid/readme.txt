@@ -8,7 +8,7 @@ A code to create a new tree with this branch can be found in this repository at 
 
 The new branches shall be named with the convention var_newProbNNvar.
 
-The pidtool.py will then read from this branch for resampling.
+This pidtool.py will read from this branch for resampling.
 
 The branch should also be added to the original downloaded root files.
 Copies of the root files can be found at /fhgfs/users/kschubert/public/robert.

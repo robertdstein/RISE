@@ -5,6 +5,8 @@
 #// Author:  Maximilian Schlupp
 #// E-Mail:  max.schlupp@cern.ch
 #// Date: 		2014-05-30
+#// 
+#//Now Available in Python!
 
 import ROOT
 import math
@@ -17,7 +19,7 @@ def getExpectedLimit(bkg, percentage):
     while doWhile:
         nobs += 1
         if (ROOT.TMath.Poisson(nobs-1,bkg) < 1e-06) & (nobs-1 < bkg):
-            pass
+            continue
 	if(ROOT.TMath.Poisson(nobs-1,bkg) < 1e-06) & (nobs-1 > bkg):
 	    doWhile = False
 	add = ROOT.TMath.Poisson(nobs-1,bkg) * getUpperLimitPoisson(bkg, nobs-1, percentage)

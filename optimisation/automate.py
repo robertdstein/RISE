@@ -2,10 +2,12 @@ import ROOT, time, os, csv
 import numpy as np
 import newcalculate
 
-filename = 'results.csv'
+filename = 'results'
+
+#Iteratively test a range of values with fixed intervals for a given variable
 
 def process(source=filename, variable = "bdt", interval=0.1, lowerlim=0.7, upperlim=0.99, text=False, random=False):
-    with open("sources/" + source, 'wb') as csvfile:
+    with open("sources/" + source + ".csv", 'wb') as csvfile:
         writer = csv.writer(csvfile, delimiter=' ',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         writer.writerow([str(variable), 'ratio', 'error'])
@@ -22,13 +24,7 @@ def process(source=filename, variable = "bdt", interval=0.1, lowerlim=0.7, upper
             writer.writerow(data)
         pass
 
-    #Produces an output message. Then sends an email notification.
+    #Produces an output message
 
     message = str(time.asctime(time.localtime())) + " Results saved in " + source
     print message
-
-    import os, sys
-    sys.path.append('/home/rstein/pythonscripts/misc')
-    import sendemail as se
-    name = os.path.basename(__file__)
-    se.send(name, message)

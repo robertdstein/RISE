@@ -1,6 +1,8 @@
 import ROOT
 import argparse
 
+#Applies cuts to a dataset, creating a new tree
+
 parser = argparse.ArgumentParser(description='Cut Data')
 parser.add_argument("-s", "--sim", action="store_true")
 cfg = parser.parse_args()

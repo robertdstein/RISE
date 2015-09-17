@@ -1,7 +1,7 @@
 import ROOT
 import array, time, math
 
-#Add a branch with the minimum transverse momentum
+#Add a branch with the 4 vector Magnitude
 
 print time.asctime(time.localtime()), "writing a tree"
 

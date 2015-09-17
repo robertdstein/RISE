@@ -52,3 +52,16 @@ def send(codename, trace=None):
     mail.quit()
 
     print time.asctime(time.localtime()), "Email notification sent to", you
+
+
+#INCLUDE AT THE END OF A SCRIPT WITH CUSTOMISED MESSAGE 
+#Sends an email notification
+
+#message = str(time.asctime(time.localtime())) + " Created new tree at /net/storage03/data/users/rstein/tuples/pid/" + tupleName+ ".root"
+#print message
+#
+#import os, sys
+#sys.path.append('/home/rstein/pythonscripts/misc')
+#import sendemail as se
+#name = os.path.basename(__file__)
+#se.send(name, message)

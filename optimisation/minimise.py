@@ -52,11 +52,3 @@ def run(Kmin=False, Emin=False, Mumin=False, text=False):
     
     message = str(time.asctime(time.localtime())) + " Finished minimisation with output "  + str(m.print_param())
     print message
-    
-    #Sends an email notification on completion     
-    
-    import os, sys
-    sys.path.append('/home/rstein/pythonscripts/misc')
-    import sendemail as se
-    name = os.path.basename(__file__)
-    se.send(name, message)
